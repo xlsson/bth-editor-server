@@ -6,8 +6,9 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 
 // Define routes
-const routeRead = require('./routes/read');
-const routeWrite = require('./routes/write');
+const routeReadAll = require('./routes/readall');
+const routeReadOne = require('./routes/readone');
+const routeCreateOne = require('./routes/createone');
 
 const app = express();
 
@@ -24,8 +25,8 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // Routes
-app.get("/read", routeRead);
-app.post("/write", routeWrite);
+app.get("/readall", routeReadAll);
+app.post("/createone", routeCreateOne);
 
 app.listen(port, function() {
     return console.log(`Express running on port: ${port}`);

@@ -3,9 +3,9 @@
 const express = require('express');
 const app = express();
 
-const databaseConnection = require('../db/databaseconnection.js');
+const {databaseConnection, dsn} = require('../db/databaseconnection.js');
 
-app.get("/read", async function(req, res) {
+app.get("/readone", async function(req, res) {
 
     let database = await databaseConnection.getDb();
     let resultSet = await database.collection.find({}).toArray();

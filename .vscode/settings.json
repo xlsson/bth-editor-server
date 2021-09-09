@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/bbf95d72-3576-417b-bd1c-c1f569f98cec/resourceGroups/DIDA-RIAX20-DV1612-H21-LP1/providers/Microsoft.Web/sites/jsramverk-editor-riax20",
+    "appService.deploySubpath": "."
+}

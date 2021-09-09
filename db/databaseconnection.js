@@ -3,13 +3,12 @@
 const mongo = require("mongodb").MongoClient;
 const config = require("./config.json");
 const collectionName = "docs";
+const dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.dbname}?retryWrites=true&w=majority`;
 
 const databaseConnection = {
     getDb: async function getDb () {
-        let dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.dbname}?retryWrites=true&w=majority`;
-
         if (process.env.NODE_ENV === 'test') {
-            dsn = "mongodb://localhost:27017/test";
+            dsn = "mongodb://localhost:1234/test";
         }
 
         const client  = await mongo.connect(dsn, {
@@ -27,4 +26,7 @@ const databaseConnection = {
     }
 };
 
-module.exports = databaseConnection;
+module.exports = {
+    databaseConnection: databaseConnection,
+    dsn: dsn
+};
