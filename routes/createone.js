@@ -10,8 +10,6 @@ app.post("/createone", async function(req, res) {
 
     const database = await databaseConnection.getDb();
 
-    let uniqueName = true;
-
     let returnValue = [{}];
 
     const doc = {
@@ -19,7 +17,9 @@ app.post("/createone", async function(req, res) {
         content: req.body.content,
     };
 
-    // Find using await
+    let uniqueName = true;
+
+    // Check if docname already exists in collection
     try {
         const criteria = { docname: doc.docname };
         const projection = { _id: 0, docname: 1 };
