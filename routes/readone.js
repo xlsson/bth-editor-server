@@ -3,16 +3,14 @@
 const express = require('express');
 const app = express();
 
-const {databaseConnection, dsn} = require('../db/databaseconnection.js');
+const search = require('../db/search.js');
 
-app.get("/readone", async function(req, res) {
+app.get("/readone/:docId", async function(req, res) {
+    let docId = req.params.docId;
+    console.log(docId);
+    let result = await search.findById(docId);
 
-    let database = await databaseConnection.getDb();
-    let resultSet = await database.collection.find({}).toArray();
-
-    await database.client.close();
-
-    res.status(200).json(resultSet);
+    res.status(200).json(result);
 });
 
 module.exports = app;

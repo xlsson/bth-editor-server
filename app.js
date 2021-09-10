@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 // Routes
 app.get("/readall", routeReadAll);
+app.get("/readone/:docId", routeReadOne);
 app.post("/createone", routeCreateOne);
 
 app.listen(port, function() {
