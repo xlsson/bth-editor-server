@@ -101,6 +101,7 @@ const search = {
             if ((typeof(result[0]) != "undefined")) {
                 documentInfo = [ {
                     exists: "true",
+                    _id: result[0]._id,
                     docname: result[0].docname,
                     content: result[0].content
                 } ];

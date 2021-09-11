@@ -20,9 +20,7 @@ app.put("/updateone", async function(req, res) {
         { $set: { content: content } }
     );
 
-    console.log("Modified: ", result.modifiedCount);
-
-    res.status(204).json();
+    res.status(204).json(result.modifiedCount);
 });
 
 module.exports = app;

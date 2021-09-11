@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "production": "NODE_ENV='production' node app.js",
-    "watch": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "production": "cross-env NODE_ENV='production' node app.js",
+    "test": "cross-env NODE_ENV='test' node app.js",
+    "watch": "cross-env NODE_ENV='test' nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "express": "^4.17.1",
     "mongodb": "^4.1.1",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
