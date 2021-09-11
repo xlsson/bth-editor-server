@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
 const routeCreateOne = require('./routes/createone');
+const routeUpdateOne = require('./routes/updateone');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.get("/readall", routeReadAll);
 app.get("/readone/:docId", routeReadOne);
 app.post("/createone", routeCreateOne);
+app.put("/updateone", routeUpdateOne);
 
 app.listen(port, function() {
     return console.log(`Express running on port: ${port}`);
