@@ -19,11 +19,10 @@ variable set to `test`.
 restarts the server automatically whenever a file is updated.
 
 ### Available routes
-The following routes are available, using the given HTTP request methods. All
-routes return a JSON-formatted array.
+The following routes are available:
 
 `/readall` – GET method, takes no arguments.
-Returns all properties for all documents.
+Returns a JSON-formatted array with all documents (and all their properties).
 
 `/readone/:<docId>` – GET method, takes `docid` as argument.
 If the id is found, it returns
