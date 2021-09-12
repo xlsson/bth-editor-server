@@ -53,7 +53,7 @@ const search = {
         // Check if id exists in collection
         try {
             const criteria = { _id: objectDocId };
-            const projection = { _id: 1, docname: 1, content: 1 };
+            const projection = { _id: 1, filename: 1, title: 1, content: 1 };
             const limit = 1;
 
             const result = await search.find(
@@ -64,7 +64,8 @@ const search = {
                 documentInfo = [ {
                     exists: "true",
                     _id: result[0]._id,
-                    docname: result[0].docname,
+                    filename: result[0].filename,
+                    title: result[0].title,
                     content: result[0].content
                 } ];
             }
@@ -75,23 +76,23 @@ const search = {
     },
 
     /**
-     * Find documents in collection by matching document name
+     * Find documents in collection by matching filename
      *
      * @async
      *
-     * @param {string} docname    Name of document
+     * @param {string} filename    Name of document
 
      * @throws Error when database operation fails.
      *
      * @return {Promise<array>} The resultset as an array.
      */
-    findByName: async function (docname) {
+    findByName: async function (filename) {
     let documentInfo = [ { exists: "false" } ];
 
-        // Check if docname already exists in collection
+        // Check if filename already exists in collection
         try {
-            const criteria = { docname: docname };
-            const projection = { _id: 0, docname: 1 };
+            const criteria = { filename: filename };
+            const projection = { _id: 0, filename: 1 };
             const limit = 1;
 
             const result = await search.find(
@@ -102,7 +103,8 @@ const search = {
                 documentInfo = [ {
                     exists: "true",
                     _id: result[0]._id,
-                    docname: result[0].docname,
+                    filename: result[0].filename,
+                    title: result[0].title,
                     content: result[0].content
                 } ];
             }
