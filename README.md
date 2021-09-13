@@ -32,7 +32,7 @@ If the id is not found, it returns `[ { "exists": "false" } ]`.
 
 `/createone` – POST method, takes `filename`, `title` and `content` as arguments.
 Checks if the `filename` property does not already exists in database. If not, it saves the
-created document in the database, and returns `[ { "exists": "false" } ]`.
+created document in the database, and returns `[ { "exists": "false", "acknowledged": "true", "insertedId": "<id>" } ]`.
 If the filename already exists, it does not save the document, and instead returns
 `[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
 

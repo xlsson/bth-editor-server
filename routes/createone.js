@@ -18,12 +18,13 @@ app.post("/createone", async function(req, res) {
     let result = await search.findByName(doc.filename);
 
     //Only create if document name doesn't already exist
-    if (result[0].exists == "false") {
+    if (result[0].exists === "false") {
         const database = await databaseConnection.getDb();
         result = await database.collection.insertOne(doc);
+        result.exists = "false";
+        result = [result];
         await database.client.close();
     }
-
     res.status(201).json(result);
 });
 
