@@ -1,6 +1,6 @@
 {
   "name": "editorserver",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -8,11 +8,11 @@
     "production": "cross-env NODE_ENV='production' node app.js",
     "dev": "cross-env NODE_ENV='dev' node app.js",
     "watch": "cross-env NODE_ENV='dev' nodemon app.js",
-    "test": "echo 'this is a test'",
+    "test": "cross-env NODE_ENV='test' && nyc --reporter=html --reporter=text mocha",
     "clean": "rm -rf node_modules/ package-lock.json",
     "clean-tests": "npm run clean && npm install && npm test"
   },
-  "author": "",
+  "author": "xlsson",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
@@ -21,6 +21,10 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "cross-env": "^7.0.3",
+    "mocha": "^9.1.1",
+    "nyc": "^15.1.0"
   }
 }

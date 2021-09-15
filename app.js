@@ -31,6 +31,8 @@ app.get("/readone/:docId", routeReadOne);
 app.post("/createone", routeCreateOne);
 app.put("/updateone", routeUpdateOne);
 
-app.listen(port, function() {
+const server = app.listen(port, function() {
     return console.log(`Express running on port: ${port}`);
 });
+
+module.exports = server;

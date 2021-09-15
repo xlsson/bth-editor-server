@@ -15,11 +15,15 @@ const secrets = process.env.JWT_SECRET || config;
 
 let dbname = secrets.dbname;
 
-if ((process.env.NODE_ENV === 'test') || (process.env.NODE_ENV === 'dev')) {
-    dbname = secrets.testdbname;
+if (process.env.NODE_ENV === 'dev') {
+    dbname = secrets.devdbname;
 }
 
-const dsn = `mongodb+srv://${secrets.username}:${secrets.password}@cluster0.xdeq5.mongodb.net/${dbname}?retryWrites=true&w=majority`;
+let dsn = `mongodb+srv://${secrets.username}:${secrets.password}@cluster0.xdeq5.mongodb.net/${dbname}?retryWrites=true&w=majority`;
+
+if (process.env.NODE_ENV === 'test') {
+    dsn = `mongodb://127.0.0.1/test`;
+}
 
 const databaseConnection = {
     getDb: async function getDb () {
