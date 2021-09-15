@@ -1,3 +1,5 @@
+[![Build Status](https://app.travis-ci.com/xlsson/bth-editor-server.svg?branch=main)](https://app.travis-ci.com/xlsson/bth-editor-server)
+
 # bth-editor-server
 Server for the reactjs collaborative editor ([xlsson/bth-reactjs-editor](https://github.com/xlsson/bth-reactjs-editor)), for the course JavaScript-based web frameworks at Blekinge Technical University (BTH). The server works as an API for a MongoDB database, stored
 in the MongoDB Atlas cloud.
