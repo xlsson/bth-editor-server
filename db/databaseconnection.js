@@ -1,16 +1,28 @@
 "use strict";
 
 const mongo = require("mongodb").MongoClient;
-const config = require("./config.json");
 const collectionName = "docs";
-let dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.dbname}?retryWrites=true&w=majority`;
+
+let config;
+
+try {
+    config = require("./config.json");
+} catch (e) {
+    console.log(e);
+}
+
+const secrets = process.env.JWT_SECRET || config;
+
+let dbname = secrets.dbname;
+
+if ((process.env.NODE_ENV === 'test') || (process.env.NODE_ENV === 'dev')) {
+    dbname = secrets.testdbname;
+}
+
+const dsn = `mongodb+srv://${secrets.username}:${secrets.password}@cluster0.xdeq5.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 
 const databaseConnection = {
     getDb: async function getDb () {
-        if (process.env.NODE_ENV === 'test') {
-            dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.testdbname}?retryWrites=true&w=majority`;
-        }
-
         const client  = await mongo.connect(dsn, {
             useNewUrlParser: true,
             useUnifiedTopology: true,

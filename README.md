@@ -13,10 +13,10 @@ the production database.
 `npm run production` starts the server in production mode, with the NODE_ENV
 variable set to `production`, using the production database.
 
-`npm run test` starts the server in test = development mode,  with the NODE_ENV
-variable set to `test`, using the test database.
+`npm run dev` starts the server in dev = development mode,  with the NODE_ENV
+variable set to `dev`, using the test database.
 
-`npm run watch` does the same thing as `npm run test`, but also restarts the
+`npm run watch` does the same thing as `npm run dev`, but also restarts the
 server automatically whenever a file is updated.
 
 ### Available routes

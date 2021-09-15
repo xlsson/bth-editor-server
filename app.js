@@ -16,7 +16,7 @@ const app = express();
 const port = process.env.PORT || 1234;
 
 // don't show the log when it is test
-if (process.env.NODE_ENV !== 'test') {
+if ((process.env.NODE_ENV !== 'test') || (process.env.NODE_ENV !== 'dev')) {
     // use morgan to log at command line
     app.use(morgan('combined')); // 'combined' outputs the Apache style LOGs
 }

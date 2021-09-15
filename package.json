@@ -6,8 +6,11 @@
   "scripts": {
     "start": "node app.js",
     "production": "cross-env NODE_ENV='production' node app.js",
-    "test": "cross-env NODE_ENV='test' node app.js",
-    "watch": "cross-env NODE_ENV='test' nodemon app.js"
+    "dev": "cross-env NODE_ENV='dev' node app.js",
+    "watch": "cross-env NODE_ENV='dev' nodemon app.js",
+    "test": "echo 'this is a test'",
+    "clean": "rm -rf node_modules/ package-lock.json",
+    "clean-tests": "npm run clean && npm install && npm test"
   },
   "author": "",
   "license": "ISC",
