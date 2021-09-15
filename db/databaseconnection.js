@@ -4,6 +4,8 @@ const mongo = require("mongodb").MongoClient;
 const collectionName = "docs";
 
 let config;
+let dsn;
+let dbname;
 
 try {
     config = require("./config.json");
@@ -11,18 +13,12 @@ try {
     console.log(e);
 }
 
-const secrets = process.env.JWT_SECRET || config;
-
-let dbname = secrets.dbname;
-
-if (process.env.NODE_ENV === 'dev') {
-    dbname = secrets.devdbname;
-}
-
-let dsn = `mongodb+srv://${secrets.username}:${secrets.password}@cluster0.xdeq5.mongodb.net/${dbname}?retryWrites=true&w=majority`;
-
 if (process.env.NODE_ENV === 'test') {
     dsn = `mongodb://127.0.0.1/test`;
+} else if (process.env.NODE_ENV === 'dev') {
+    dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.devdbname}?retryWrites=true&w=majority`;
+} else {
+    dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.dbname}?retryWrites=true&w=majority`;
 }
 
 const databaseConnection = {
