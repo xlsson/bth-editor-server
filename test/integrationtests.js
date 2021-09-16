@@ -37,24 +37,24 @@ describe('Read all documents', () => {
 //     });
 // });
 
-// describe('Create one document', () => {
-//     describe('POST /createone', () => {
-//         it('Request returns status 201 and index 0 is an object', (done) => {
-//             chai.request(server)
-//                 .post("/createone")
-//                 .set('content-type', 'application/x-www-form-urlencoded')
-//                 .send({
-//                     filename: 'createfilename',
-//                     title: 'createtitle',
-//                     content: 'createcontent'
-//                 })
-//                 .end((err, res) => {
-//                     res.should.have.status(201);
-//                     res.body.should.be.an("array");
-//                     res.body[0].should.be.an("object");
-//                     res.body[0].exists.should.equal("false");
-//                     done();
-//                 });
-//         });
-//     });
-// });
+describe('Create one document', () => {
+    describe('POST /createone', () => {
+        it('Request returns status 201 and index 0 is an object', (done) => {
+            chai.request(server)
+                .post("/createone")
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'createfilename2',
+                    title: 'createtitle2',
+                    content: 'createcontent2'
+                })
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.be.an("array");
+                    res.body[0].should.be.an("object");
+                    res.body[0].exists.should.equal("false");
+                    done();
+                });
+        });
+    });
+});
