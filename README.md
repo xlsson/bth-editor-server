@@ -26,17 +26,22 @@ The following routes are available:
 
 `/readall` – GET method, takes no arguments.
 Returns a JSON-formatted array with all documents (and all their properties).
+Return status: 200.
 
 `/readone/:<docId>` – GET method, takes `docid` as argument.
 If the id is found, it returns
 `[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
 If the id is not found, it returns `[ { "exists": "false" } ]`.
+Return status: 200.
 
 `/createone` – POST method, takes `filename`, `title` and `content` as arguments.
 Checks if the `filename` property does not already exists in database. If not, it saves the
 created document in the database, and returns `[ { "exists": "false", "acknowledged": "true", "insertedId": "<id>" } ]`.
 If the filename already exists, it does not save the document, and instead returns
 `[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
+Return status: 201.
 
 `/updateone` – PUT method, takes `docid`, `title` and `content` as arguments.
-This route has no return value.
+Returns
+`[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
+Return status: 200.
