@@ -14,7 +14,7 @@ try {
 }
 
 if (process.env.NODE_ENV === 'test') {
-    dsn = `mongodb://127.0.0.1/test`;
+    dsn = `mongodb://localhost/test`;
 } else if (process.env.NODE_ENV === 'dev') {
     dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.devdbname}?retryWrites=true&w=majority`;
 } else {
