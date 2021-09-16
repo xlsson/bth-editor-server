@@ -88,7 +88,7 @@ describe('Test database routes', function() {
     });
 
     describe('Update one document: PUT /updateone', () => {
-        it('Request returns status 200 and res.body is an object', (done) => {
+        it('Request returns status 200 and res.body contains expected property', (done) => {
             chai.request(server)
                 .put("/updateone")
                 .set('content-type', 'application/x-www-form-urlencoded')
