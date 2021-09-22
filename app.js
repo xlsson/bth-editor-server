@@ -31,7 +31,30 @@ app.get("/readone/:docId", routeReadOne);
 app.post("/createone", routeCreateOne);
 app.put("/updateone", routeUpdateOne);
 
-const server = app.listen(port, function() {
+// Use socket.io to enable real-time collaborative editing
+const httpServer = require("http").createServer(app);
+const io = require("socket.io")(httpServer, {
+    cors: {
+        origin: `http://localhost:3000`,
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on('connection', function(socket) {
+    socket.on('join', function(room) {
+        socket.join(room);
+    });
+
+    socket.on('leave', function(room) {
+        socket.leave(room);
+    });
+
+    socket.on('sendContent', function(data) {
+        socket.to(data.room).emit("sendContent", data.content);
+    });
+});
+
+const server = httpServer.listen(port, function() {
     return console.log(`Express running on port: ${port}`);
 });
 
