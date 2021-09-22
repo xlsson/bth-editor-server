@@ -49,8 +49,8 @@ io.on('connection', function(socket) {
         socket.leave(room);
     });
 
-    socket.on('sendContent', function(data) {
-        socket.to(data.room).emit("sendContent", data.content);
+    socket.on('send', function(data) {
+        socket.to(data.room).emit("send", data);
     });
 });
 
