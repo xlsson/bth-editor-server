@@ -2,17 +2,14 @@
 
 const express = require('express');
 const app = express();
+const functions = require('../db/functions.js');
 
-const {databaseConnection, dsn} = require('../db/databaseconnection.js');
+app.get("/readall/:email", async function(req, res) {
+    let email = req.params.email;
+    let result = await functions.findByAllowedUser(email);
 
-app.get("/readall", async function(req, res) {
-
-    let database = await databaseConnection.getDb();
-    let resultSet = await database.collection.find({}).toArray();
-
-    await database.client.close();
-
-    res.status(200).json(resultSet);
+    console.log(result);
+    res.status(200).json(result);
 });
 
 module.exports = app;

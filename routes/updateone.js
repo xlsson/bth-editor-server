@@ -2,30 +2,18 @@
 
 const express = require('express');
 const app = express();
-const search = require('../db/search.js');
-
-const ObjectId = require('mongodb').ObjectId;
-
-const {databaseConnection, dsn} = require('../db/databaseconnection.js');
+const functions = require('../db/functions.js');
 
 app.put("/updateone", async function(req, res) {
-    let database = await databaseConnection.getDb();
+    const doc = {
+        filename: req.body.filename,
+        title: req.body.title,
+        content: req.body.content
+    };
 
-    const docId = req.body.docid;
-    const title = req.body.title;
-    const content = req.body.content;
+    const result = await functions.updateDoc(doc);
 
-    const objectDocId = new ObjectId(docId);
-
-    await database.collection.updateOne(
-        { _id: objectDocId },
-        { $set: { content: content, title: title } }
-    );
-
-    await database.client.close();
-
-    let result = await search.findById(docId);
-
+    console.log(result);
     res.status(200).json(result);
 });
 

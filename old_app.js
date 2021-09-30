@@ -8,7 +8,6 @@ const bodyParser = require("body-parser");
 // Define routes
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
-const routeCreateUser = require('./routes/createuser');
 const routeCreateOne = require('./routes/createone');
 const routeUpdateOne = require('./routes/updateone');
 
@@ -27,10 +26,9 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // Routes
-app.get("/readall/:user", routeReadAll);
-app.get("/readone/:filename", routeReadOne);
-app.post("/createuser", routeCreateUser);
-app.put("/createone", routeCreateOne);
+app.get("/readall", routeReadAll);
+app.get("/readone/:docId", routeReadOne);
+app.post("/createone", routeCreateOne);
 app.put("/updateone", routeUpdateOne);
 
 // Use socket.io to enable real-time collaborative editing

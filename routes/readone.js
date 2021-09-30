@@ -2,13 +2,11 @@
 
 const express = require('express');
 const app = express();
+const functions = require('../db/functions.js');
 
-const search = require('../db/search.js');
-
-app.get("/readone/:docId", async function(req, res) {
-    let docId = req.params.docId;
-    let result = await search.findById(docId);
-
+app.get("/readone/:filename", async function(req, res) {
+    let filename = req.params.filename;
+    let result = await functions.findByFilename(filename);
     res.status(200).json(result);
 });
 

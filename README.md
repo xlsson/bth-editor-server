@@ -24,24 +24,28 @@ server automatically whenever a file is updated.
 ### Available routes
 The following routes are available:
 
-`/readall` – GET method, takes no arguments.
-Returns a JSON-formatted array with all documents (and all their properties).
+`/readall/:<email>` – GET method, takes a user's unique id = `email` as argument.
+Returns an array with all filenames where the email in question is among the allowed users.
 Return status: 200.
 
-`/readone/:<docId>` – GET method, takes `docid` as argument.
-If the id is found, it returns
-`[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
-If the id is not found, it returns `[ { "exists": "false" } ]`.
+`/readone/:<filename>` – GET method, takes `filename` as argument.
+If the filename is found, it returns
+`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": [array of email addresses of users allowed to edit] }`.
 Return status: 200.
 
-`/createone` – POST method, takes `filename`, `title` and `content` as arguments.
-Checks if the `filename` property does not already exists in database. If not, it saves the
-created document in the database, and returns `[ { "exists": "false", "acknowledged": "true", "insertedId": "<id>" } ]`.
+`/createone` – PUT method, takes `filename`, `title`, `content` and `email` as arguments.
+Checks that the `filename` property does not already exists in database. If OK, it saves the
+created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
 If the filename already exists, it does not save the document, and instead returns
-`[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
+`{ acknowledged: true }`.
 Return status: 201.
 
-`/updateone` – PUT method, takes `docid`, `title` and `content` as arguments.
-Returns
-`[ { "_id": <id>, "filename": <filename>, "title": <title>, "content": <content>, "exists": "true" } ]`.
+`/createuser` – POST method, takes `name` and `email` as arguments.
+If `email`is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
+If `email` already exists, it does not save the user, and instead returns
+`{ acknowledged: true }`.
+Return status: 201.
+
+`/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
+Returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
 Return status: 200.

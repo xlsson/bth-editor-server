@@ -1,7 +1,7 @@
 "use strict";
 
 const mongo = require("mongodb").MongoClient;
-const collectionName = "users";
+const collectionName = "docs";
 
 let config;
 let dsn;
