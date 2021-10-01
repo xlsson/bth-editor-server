@@ -40,10 +40,14 @@ If the filename already exists, it does not save the document, and instead retur
 `{ acknowledged: true }`.
 Return status: 201.
 
-`/createuser` – POST method, takes `name` and `email` as arguments.
+`/createuser` – POST method, takes `name`, `email` and `password` as arguments.
 If `email`is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
 If `email` already exists, it does not save the user, and instead returns
 `{ acknowledged: true }`.
+Return status: 201.
+
+`/verifylogin` – POST method, takes `email` and `password` as arguments.
+Checks password against password hash stored in db. Returns `true` if match, otherwise `false`.
 Return status: 201.
 
 `/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
