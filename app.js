@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
 const routeCreateUser = require('./routes/createuser');
+const routeVerifyLogin = require('./routes/verifylogin');
 const routeCreateOne = require('./routes/createone');
 const routeUpdateOne = require('./routes/updateone');
 
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.get("/readall/:user", routeReadAll);
 app.get("/readone/:filename", routeReadOne);
 app.post("/createuser", routeCreateUser);
+app.post("/verifylogin", routeVerifyLogin);
 app.put("/createone", routeCreateOne);
 app.put("/updateone", routeUpdateOne);
 

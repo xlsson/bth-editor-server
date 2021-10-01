@@ -74,6 +74,27 @@ const functions = {
         return result;
     },
 
+    //getOneUser based on email
+    getOneUser: async function (email) {
+        const database = await databaseConnection.getDb();
+
+        let result;
+
+        try {
+            const criteria = { email: email };
+            const projection = { email: 1, name: 1, password: 1 };
+
+            result = await functions.find(criteria, projection);
+        } catch (error) {
+            console.log(error);
+            result = { acknowledged: "false" };
+        } finally {
+            await database.client.close();
+        }
+
+        return result;
+    },
+
     // Return all filenames where email is among allowedusers
     findByAllowedUser: async function (email) {
         let result = [];
