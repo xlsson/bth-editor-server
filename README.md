@@ -34,11 +34,19 @@ If the filename is found, it returns
 Return status: 200.
 
 `/createone` – PUT method, takes `filename`, `title`, `content` and `email` as arguments.
-Checks that the `filename` property does not already exists in database. If OK, it saves the
-created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
-If the filename already exists, it does not save the document, and instead returns
-`{ acknowledged: true }`.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, and the
+`filename` property does not already exists in database, it saves the
+created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, tokenIsVerified: true }`.
+If the token does not verify, it returns `{ acknowledged: false, tokenIsVerified: false }`.
+If the token verifies, but the filename already exists, it returns `{ acknowledged: false, tokenIsVerified: true }`.
 Return status: 201.
+
+`/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
+If the token does not verify, it returns `{ acknowledged: false, tokenIsVerified: false }`.
+Return status: 200.
 
 `/createuser` – POST method, takes `name`, `email` and `password` as arguments.
 If `email`is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
@@ -52,7 +60,3 @@ Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
 both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }`
 if password is wrong. Returns `{ userexists: false }` if user is not in db.
 Return status: 201.
-
-`/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
-Returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
-Return status: 200.

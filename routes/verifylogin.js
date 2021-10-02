@@ -3,7 +3,10 @@
 const express = require('express');
 const app = express();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const functions = require('../db/functions.js');
+const config = require("../db/config.json");
 
 app.post("/verifylogin", async function(req, res) {
     const email = req.body.email;
@@ -23,6 +26,14 @@ app.post("/verifylogin", async function(req, res) {
                 name: name,
                 email: email
             };
+
+            //Create a token for this session
+            if (isVerified) {
+                const payload = { email: email };
+                const secret = config.jwtsecret;
+                const token = jwt.sign(payload, secret, { expiresIn: '1h'});
+                result.token = token;
+            }
             res.status(201).json(result);
         });
     } catch (e) {

@@ -5,6 +5,9 @@ const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 
+const jwt = require('jsonwebtoken');
+const config = require("./db/config.json");
+
 // Define routes
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
@@ -27,13 +30,29 @@ app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// Routes
-app.get("/readall/:user", routeReadAll);
-app.get("/readone/:filename", routeReadOne);
+// Routes without JWT verification
 app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
-app.put("/createone", routeCreateOne);
-app.put("/updateone", routeUpdateOne);
+
+// Routes with JWT verification
+app.get("/readall/:user", routeReadAll);
+app.get("/readone/:filename", routeReadOne);
+app.put("/createone", (req, res, next) => checkToken(req, res, next), routeCreateOne);
+app.put("/updateone", (req, res, next) => checkToken(req, res, next), routeUpdateOne);
+
+function checkToken(req, res, next) {
+    const token = req.headers['x-access-token'];
+
+    jwt.verify(token, config.jwtsecret, function(err, decoded) {
+        if (err) {
+            res.locals.tokenIsVerified = false;
+        } else {
+            res.locals.tokenIsVerified = true;
+        }
+        next();
+    });
+}
+
 
 // Use socket.io to enable real-time collaborative editing
 const httpServer = require("http").createServer(app);

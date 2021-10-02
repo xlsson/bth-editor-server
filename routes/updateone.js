@@ -5,13 +5,23 @@ const app = express();
 const functions = require('../db/functions.js');
 
 app.put("/updateone", async function(req, res) {
-    const doc = {
-        filename: req.body.filename,
-        title: req.body.title,
-        content: req.body.content
-    };
+    let result;
 
-    const result = await functions.updateDoc(doc);
+    if (res.locals.tokenIsVerified) {
+        const doc = {
+            filename: req.body.filename,
+            title: req.body.title,
+            content: req.body.content
+        };
+
+        result = await functions.updateDoc(doc);
+        result.tokenIsVerified = true;
+    } else {
+        result = {
+            acknowledged: false,
+            tokenIsVerified: false
+        };
+    }
 
     console.log(result);
     res.status(200).json(result);
