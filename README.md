@@ -25,12 +25,18 @@ server automatically whenever a file is updated.
 The following routes are available:
 
 `/readall/:<email>` – GET method, takes a user's unique id = `email` as argument.
-Returns an array with all filenames where the email in question is among the allowed users.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, it returns `{ allFilenames: <array>, tokenIsVerified: true }`.
+`<array>` is an array with all filenames where the email in question is among the allowed users.
+If the token does not verify, it returns `{ tokenIsVerified: false }`.
 Return status: 200.
 
 `/readone/:<filename>` – GET method, takes `filename` as argument.
-If the filename is found, it returns
-`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": [array of email addresses of users allowed to edit] }`.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, it returns
+`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": <array>,  tokenIsVerified: false }`.
+`<array>` is an array of email addresses of the users allowed to edit.
+If the token does not verify, it returns `{ tokenIsVerified: false }`.
 Return status: 200.
 
 `/createone` – PUT method, takes `filename`, `title`, `content` and `email` as arguments.
