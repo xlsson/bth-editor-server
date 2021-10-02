@@ -24,7 +24,6 @@ app.put("/createone", async function(req, res) {
         };
     }
 
-    console.log(result);
     res.status(201).json(result);
 });
 
