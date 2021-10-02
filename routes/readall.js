@@ -5,10 +5,15 @@ const app = express();
 const functions = require('../db/functions.js');
 
 app.get("/readall/:email", async function(req, res) {
-    let email = req.params.email;
-    let result = await functions.findByAllowedUser(email);
+    let result = {};
 
-    console.log(result);
+    if (res.locals.tokenIsVerified) {
+        let email = req.params.email;
+        result.allFilenames = await functions.findByAllowedUser(email);
+        result.tokenIsVerified = true;
+    } else {
+        result.tokenIsVerified = false;
+    }
     res.status(200).json(result);
 });
 

@@ -35,8 +35,8 @@ app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
 
 // Routes with JWT verification
-app.get("/readall/:user", routeReadAll);
-app.get("/readone/:filename", routeReadOne);
+app.get("/readall/:user", (req, res, next) => checkToken(req, res, next), routeReadAll);
+app.get("/readone/:filename", (req, res, next) => checkToken(req, res, next), routeReadOne);
 app.put("/createone", (req, res, next) => checkToken(req, res, next), routeCreateOne);
 app.put("/updateone", (req, res, next) => checkToken(req, res, next), routeUpdateOne);
 
