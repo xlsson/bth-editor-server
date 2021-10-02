@@ -47,7 +47,10 @@ If `email` already exists, it does not save the user, and instead returns
 Return status: 201.
 
 `/verifylogin` – POST method, takes `email` and `password` as arguments.
-Checks password against password hash stored in db. Returns `true` if match, otherwise `false`.
+Tries to find user in db. Checks password against password hash stored in db.
+Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
+both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }`
+if password is wrong. Returns `{ userexists: false }` if user is not in db.
 Return status: 201.
 
 `/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
