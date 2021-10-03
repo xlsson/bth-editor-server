@@ -9,13 +9,14 @@ const jwt = require('jsonwebtoken');
 const config = require("./db/config.json");
 
 // Define routes
+const routeCreateUser = require('./routes/createuser');
+const routeVerifyLogin = require('./routes/verifylogin');
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
 const routeAllUsers = require('./routes/allusers');
-const routeCreateUser = require('./routes/createuser');
-const routeVerifyLogin = require('./routes/verifylogin');
 const routeCreateOne = require('./routes/createone');
 const routeUpdateOne = require('./routes/updateone');
+const routeUpdateUsers = require('./routes/updateusers');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.get("/readone/:filename", (req, res, next) => checkToken(req, res, next), ro
 app.get("/allusers", (req, res, next) => checkToken(req, res, next), routeAllUsers);
 app.put("/createone", (req, res, next) => checkToken(req, res, next), routeCreateOne);
 app.put("/updateone", (req, res, next) => checkToken(req, res, next), routeUpdateOne);
+app.put("/updateusers", (req, res, next) => checkToken(req, res, next), routeUpdateUsers);
 
 function checkToken(req, res, next) {
     const token = req.headers['x-access-token'];

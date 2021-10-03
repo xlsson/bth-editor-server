@@ -56,6 +56,21 @@ const functions = {
         return result;
     },
 
+    updateUsers: async function (params) {
+        const database = await databaseConnection.getDb();
+        const criteria = { "docs.filename": params.filename };
+
+        let result = await database.collection.updateOne(
+            criteria,
+            { $set: { "docs.$.allowedusers": params.allowedusers } }
+        );
+
+        result.allowedusers = params.allowedusers;
+
+        await database.client.close();
+        return result;
+    },
+
     createNewUser: async function (user) {
         const database = await databaseConnection.getDb();
 
