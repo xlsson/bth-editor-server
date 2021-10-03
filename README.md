@@ -68,6 +68,13 @@ If `email` already exists, it does not save the user, and instead returns
 `{ acknowledged: true }`.
 Return status: 201.
 
+`/updateusers` – PUT method, takes `filename` and `allowedusers` (an array) as arguments.
+The array is an array of users who should be allowed to edit the document.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }`.
+If the token does not verify, it returns `{ tokenIsVerified: false }`.
+Return status: 200.
+
 `/verifylogin` – POST method, takes `email` and `password` as arguments.
 Tries to find user in db. Checks password against password hash stored in db.
 Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
