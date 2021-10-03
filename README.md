@@ -34,8 +34,16 @@ Return status: 200.
 `/readone/:<filename>` – GET method, takes `filename` as argument.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns
-`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": <array>,  tokenIsVerified: false }`.
+`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": <array>,  tokenIsVerified: true }`.
 `<array>` is an array of email addresses of the users allowed to edit.
+If the token does not verify, it returns `{ tokenIsVerified: false }`.
+Return status: 200.
+
+`/allusers` – GET method, takes no argument.
+Takes a JWT token as an `x-access-token` header.
+If the token verifies, it returns
+`{ "allUsers": <array>, tokenIsVerified: true }`.
+`<array>` is an array of email addresses of all users in the collection.
 If the token does not verify, it returns `{ tokenIsVerified: false }`.
 Return status: 200.
 

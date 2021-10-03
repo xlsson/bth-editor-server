@@ -172,6 +172,19 @@ const functions = {
         });
 
         return filenames;
+    },
+
+    // Return array with all user emails in the collection
+    getAllUsers: async function () {
+        let users = [];
+        const database = await databaseConnection.getDb();
+        let all = await database.collection.find({}).toArray();
+
+        all.forEach((user) => {
+            users.push(user.email);
+        });
+
+        return users;
     }
 };
 

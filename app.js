@@ -11,6 +11,7 @@ const config = require("./db/config.json");
 // Define routes
 const routeReadAll = require('./routes/readall');
 const routeReadOne = require('./routes/readone');
+const routeAllUsers = require('./routes/allusers');
 const routeCreateUser = require('./routes/createuser');
 const routeVerifyLogin = require('./routes/verifylogin');
 const routeCreateOne = require('./routes/createone');
@@ -37,6 +38,7 @@ app.post("/verifylogin", routeVerifyLogin);
 // Routes with JWT verification
 app.get("/readall/:user", (req, res, next) => checkToken(req, res, next), routeReadAll);
 app.get("/readone/:filename", (req, res, next) => checkToken(req, res, next), routeReadOne);
+app.get("/allusers", (req, res, next) => checkToken(req, res, next), routeAllUsers);
 app.put("/createone", (req, res, next) => checkToken(req, res, next), routeCreateOne);
 app.put("/updateone", (req, res, next) => checkToken(req, res, next), routeUpdateOne);
 
