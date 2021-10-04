@@ -13,6 +13,7 @@ try {
     config = require("./db/config.json");
 } catch (e) {
     console.log(e);
+    config = require("./db/testconfig.json");
 }
 
 // Define routes
@@ -29,14 +30,11 @@ const app = express();
 
 const port = process.env.PORT || 1234;
 
-let secret;
+const secret = config.jwtsecret;
 
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
     // Unless during test, use morgan to log at command line
-    secret = config.jwtsecret;
     app.use(morgan('combined'));
-} else {
-    secret = "f89j4839j()JMCE&BNfdiosmvkds93NIg0r+zZksodbklmYs8sn129dabmMoQKjKiz";
 }
 
 app.use(cors());

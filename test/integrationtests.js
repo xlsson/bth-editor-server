@@ -6,7 +6,7 @@ const server = require('../app.js');
 const mongo = require("mongodb").MongoClient;
 
 const jwt = require('jsonwebtoken');
-const config = require('../db/config.json');
+const config = require('../db/testconfig.json');
 
 var client;
 
@@ -57,7 +57,7 @@ describe('Test database routes', function() {
         testUserId = testUser.insertedId.toString();
 
         // Create a JSON web token needed for http requests
-        testUserToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecrettest, { expiresIn: '1h'});
+        testUserToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
     });
 
     after( function(done) {
@@ -79,7 +79,7 @@ describe('Test database routes', function() {
                 });
         });
     });
-    
+
     describe('Create one document: PUT /createone', () => {
         it('Request returns status 201 is an object, where property acknowledged is true', (done) => {
             chai.request(server)
