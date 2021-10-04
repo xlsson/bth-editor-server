@@ -23,7 +23,6 @@ const app = express();
 const port = process.env.PORT || 1234;
 
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
-    console.log("hejdå morgan");
     // Unless during test, use morgan to log at command line
     app.use(morgan('combined'));
 }
@@ -31,7 +30,6 @@ if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
 let secret = config.jwtsecret;
 
 if (process.env.NODE_ENV === "test") {
-    console.log("i test");
     secret = config.jwtsecrettest;
 }
 
