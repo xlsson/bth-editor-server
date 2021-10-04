@@ -6,7 +6,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const functions = require('../db/functions.js');
-const config = require("../db/config.json");
+
+let config;
+
+if (process.env.NODE_ENV === 'test') {
+    config = require("../db/testconfig.json");
+} else {
+    config = require("../db/config.json");
+}
 
 app.post("/verifylogin", async function(req, res) {
     const email = req.body.email;
