@@ -6,7 +6,14 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 
 const jwt = require('jsonwebtoken');
-const config = require("./db/config.json");
+
+let config;
+
+try {
+    config = require("./db/config.json");
+} catch (e) {
+    console.log(e);
+}
 
 // Define routes
 const routeCreateUser = require('./routes/createuser');
@@ -22,15 +29,14 @@ const app = express();
 
 const port = process.env.PORT || 1234;
 
+let secret;
+
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
     // Unless during test, use morgan to log at command line
+    secret = config.jwtsecret;
     app.use(morgan('combined'));
-}
-
-let secret = config.jwtsecret;
-
-if (process.env.NODE_ENV === "test") {
-    secret = config.jwtsecrettest;
+} else {
+    secret = "f89j4839j()JMCE&BNfdiosmvkds93NIg0r+zZksodbklmYs8sn129dabmMoQKjKiz";
 }
 
 app.use(cors());
