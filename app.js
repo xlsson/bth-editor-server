@@ -22,10 +22,17 @@ const app = express();
 
 const port = process.env.PORT || 1234;
 
-// don't show the log when it is test
-if ((process.env.NODE_ENV !== 'test') || (process.env.NODE_ENV !== 'dev')) {
-    // use morgan to log at command line
-    app.use(morgan('combined')); // 'combined' outputs the Apache style LOGs
+if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
+    console.log("hejdå morgan");
+    // Unless during test, use morgan to log at command line
+    app.use(morgan('combined'));
+}
+
+let secret = config.jwtsecret;
+
+if (process.env.NODE_ENV === "test") {
+    console.log("i test");
+    secret = config.jwtsecrettest;
 }
 
 app.use(cors());
@@ -47,7 +54,7 @@ app.put("/updateusers", (req, res, next) => checkToken(req, res, next), routeUpd
 function checkToken(req, res, next) {
     const token = req.headers['x-access-token'];
 
-    jwt.verify(token, config.jwtsecret, function(err, decoded) {
+    jwt.verify(token, secret, function(err, decoded) {
         if (err) {
             res.locals.tokenIsVerified = false;
         } else {

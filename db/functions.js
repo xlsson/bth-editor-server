@@ -147,7 +147,6 @@ const functions = {
 
     // Return file info with matching filename
     findByFilename: async function (filename) {
-        console.log(filename);
         let result;
         try {
             const criteria = { docs: { $elemMatch: { filename: filename } } };
@@ -163,7 +162,6 @@ const functions = {
                 content: result[0].docs[0].content,
                 allowedusers: result[0].docs[0].allowedusers
             };
-            console.log(result);
         } catch (err) {
             console.log(err);
             result = err;
