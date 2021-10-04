@@ -12,10 +12,10 @@ const jwt = require('jsonwebtoken');
 let config;
 let secret;
 
-try {
+if (process.env.NODE_ENV === 'test') {
+    config = require("./db/testconfig.json");
+} else {
     config = require("./db/config.json");
-} catch (e) {
-    console.log(e);
 }
 
 // Define routes
@@ -35,8 +35,6 @@ const port = process.env.PORT || 1234;
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
     // Unless during test, use morgan to log at command line
     app.use(morgan('combined'));
-} else {
-    config = require("./db/testconfig.json");
 }
 
 secret = config.jwtsecret;
