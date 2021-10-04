@@ -7,17 +7,13 @@ let config;
 let dsn;
 let dbname;
 
-try {
-    config = require("./config.json");
-} catch (e) {
-    console.log(e);
-}
-
 if (process.env.NODE_ENV === 'test') {
     dsn = `mongodb://localhost/test`;
 } else if (process.env.NODE_ENV === 'dev') {
+    config = require("./config.json");
     dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.devdbname}?retryWrites=true&w=majority`;
 } else {
+    config = require("./config.json");
     dsn = `mongodb+srv://${config.username}:${config.password}@cluster0.xdeq5.mongodb.net/${config.dbname}?retryWrites=true&w=majority`;
 }
 
