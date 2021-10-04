@@ -5,9 +5,14 @@ const chaiHttp = require('chai-http');
 const server = require('../app.js');
 const mongo = require("mongodb").MongoClient;
 
+const jwt = require('jsonwebtoken');
+const config = require('../db/config.json');
+
 var client;
 
-var testDocId;
+var testUserData;
+var testUserId;
+var testUserToken;
 
 chai.should();
 
@@ -27,13 +32,32 @@ describe('Test database routes', function() {
         // Setup database collection by first wiping it and then adding a document
         await db.dropDatabase();
 
-        let testDoc = await db.collection("docs").insertOne({
-            filename: "justanothername",
-            title: "justanothertitle",
-            content: "justsomemorecontent"
-        });
+        testUserData = {
+            name: "Max",
+            docs: [
+                {
+                    filename: "meinbuch",
+                    title: "Das Buch",
+                    content: "Das ist ein buch. Das ist mein Buch",
+                    allowedusers: [ "max@mustermann.de", "lisa@mustermann.de", "johnny@mustermann.de" ]
+                },
+                {
+                    filename: "daszweite",
+                    title: "Buch 2",
+                    content: "Hier ist ein Buch, das ich geschrieben habe.",
+                    allowedusers: [ "pelle@mustermann.de", "johnny@mustermann.de" ]
+                }
+            ],
+            email: "max@mustermann.de",
+            password: "$2a$10$sDMqioEmfkbrHr2TvD/IrOoJ1ZanQfrQ.03hym6SKNdSZ59oicUry"
+        }
 
-        testDocId = testDoc.insertedId.toString();
+        let testUser = await db.collection("users").insertOne(testUserData);
+
+        testUserId = testUser.insertedId.toString();
+
+        // Create a JSON web token needed for http requests
+        testUserToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecrettest, { expiresIn: '1h'});
     });
 
     after( function(done) {
@@ -41,66 +65,71 @@ describe('Test database routes', function() {
         client.close(done);
     });
 
-    describe('Read all documents: GET /readall', () => {
-        it('Request returns status 200 and is array', (done) => {
+    describe('Read all documents: GET /readall/<email>', () => {
+        it('Request returns status 200 and token is verified', (done) => {
             chai.request(server)
-                .get("/readall")
+                .get("/readall/johnny@mustermann.de")
+                .set('x-access-token', testUserToken)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.an("array");
+                    res.body.should.be.an("object");
+                    res.body.tokenIsVerified.should.equal(true);
+                    res.body.allFilenames[0].should.equal("meinbuch");
                     done();
                 });
         });
     });
-
-    describe('Create one document: POST /createone', () => {
-        it('Request returns status 201 and index 0 is an object', (done) => {
+    
+    describe('Create one document: PUT /createone', () => {
+        it('Request returns status 201 is an object, where property acknowledged is true', (done) => {
             chai.request(server)
-                .post("/createone")
+                .put("/createone")
+                .set('x-access-token', testUserToken)
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send({
                     filename: 'afilename',
                     title: 'atitle',
-                    content: 'somecontent'
+                    content: 'somecontent',
+                    email: 'lisa@mustermann.de'
                 })
                 .end((err, res) => {
                     res.should.have.status(201);
-                    res.body.should.be.an("array");
-                    res.body[0].should.be.an("object");
-                    res.body[0].exists.should.equal("false");
+                    res.body.should.be.an("object");
+                    res.body.acknowledged.should.equal(true);
                     done();
                 });
         });
     });
 
-    describe('Read one document: GET /readone/<docid>', () => {
+    describe('Read one document: GET /readone/<filename>', () => {
         it('Request returns status 200 and result body contains expected property', (done) => {
             chai.request(server)
-                .get(`/readone/${testDocId}`)
+                .get(`/readone/${testUserData.docs[0].filename}`)
+                .set('x-access-token', testUserToken)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.an("array");
-                    res.body[0].should.be.an("object");
-                    res.body[0].filename.should.equal("justanothername");
+                    res.body.should.be.an("object");
+                    res.body.title.should.equal("Das Buch");
                     done();
                 });
         });
     });
 
     describe('Update one document: PUT /updateone', () => {
-        it('Request returns status 200 and res.body contains expected property', (done) => {
+        it('Request returns status 200 and contains expected property values', (done) => {
             chai.request(server)
                 .put("/updateone")
+                .set('x-access-token', testUserToken)
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send({
-                    docid: testDocId,
+                    filename: testUserData.docs[0].filename,
                     title: 'newtitle',
                     content: 'newcontent'
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body[0].should.be.an("object");
-                    res.body[0].title.should.equal("newtitle");
+                    res.body.acknowledged.should.equal(true);
+                    res.body.modifiedCount.should.equal(1);
                     done();
                 });
         });
