@@ -1,5 +1,7 @@
 "use strict";
 
+console.log(process.env.NODE_ENV);
+
 const express = require("express");
 const morgan = require('morgan');
 const cors = require('cors');
@@ -8,12 +10,12 @@ const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
 
 let config;
+let secret;
 
 try {
     config = require("./db/config.json");
 } catch (e) {
     console.log(e);
-    config = require("./db/testconfig.json");
 }
 
 // Define routes
@@ -30,12 +32,14 @@ const app = express();
 
 const port = process.env.PORT || 1234;
 
-const secret = config.jwtsecret;
-
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
     // Unless during test, use morgan to log at command line
     app.use(morgan('combined'));
+} else {
+    config = require("./db/testconfig.json");
 }
+
+secret = config.jwtsecret;
 
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
