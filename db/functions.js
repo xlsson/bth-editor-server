@@ -184,6 +184,8 @@ const functions = {
             filenames.push(document.filename);
         });
 
+        await database.client.close();
+
         return filenames;
     },
 
@@ -196,6 +198,8 @@ const functions = {
         all.forEach((user) => {
             users.push(user.email);
         });
+
+        await database.client.close();
 
         return users;
     }
