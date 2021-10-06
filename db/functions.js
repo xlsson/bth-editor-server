@@ -1,9 +1,6 @@
 "use strict";
 
-const express = require('express');
-const app = express();
-const ObjectId = require('mongodb').ObjectId;
-const {databaseConnection, dsn} = require('./databaseconnection.js');
+const { databaseConnection } = require('./databaseconnection.js');
 const colName = "users";
 
 const functions = {
