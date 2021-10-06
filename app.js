@@ -36,12 +36,12 @@ app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
 
 // Routes with JWT verification
-app.get("/readall/:user", (req, res, next) => auth.checkToken(req, res, next), routeReadAll);
-app.get("/readone/:filename", (req, res, next) => auth.checkToken(req, res, next), routeReadOne);
-app.get("/allusers", (req, res, next) => auth.checkToken(req, res, next), routeAllUsers);
-app.put("/createone", (req, res, next) => auth.checkToken(req, res, next), routeCreateOne);
-app.put("/updateone", (req, res, next) => auth.checkToken(req, res, next), routeUpdateOne);
-app.put("/updateusers", (req, res, next) => auth.checkToken(req, res, next), routeUpdateUsers);
+app.get("/readall/:user", auth.checkToken, routeReadAll);
+app.get("/readone/:filename", auth.checkToken, routeReadOne);
+app.get("/allusers", auth.checkToken, routeAllUsers);
+app.put("/createone", auth.checkToken, routeCreateOne);
+app.put("/updateone", auth.checkToken, routeUpdateOne);
+app.put("/updateusers", auth.checkToken, routeUpdateUsers);
 
 // Use socket.io to enable real-time collaborative editing
 const httpServer = require("http").createServer(app);
