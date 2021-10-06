@@ -8,6 +8,13 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const auth = require('./db/auth');
 
+const visual = true;
+const { graphqlHTTP } = require('express-graphql');
+const { GraphQLSchema } = require("graphql");
+const RootQueryType = require("./graphql/root.js");
+const schema = new GraphQLSchema({ query: RootQueryType });
+const users = require("./graphql/users.js");
+
 // Define routes
 const routeCreateUser = require('./routes/createuser');
 const routeVerifyLogin = require('./routes/verifylogin');
@@ -31,6 +38,11 @@ app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    graphiql: visual,
+}));
+
 // Routes without JWT verification
 app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
@@ -39,6 +51,7 @@ app.post("/verifylogin", routeVerifyLogin);
 app.get("/readall/:user", auth.checkToken, routeReadAll);
 app.get("/readone/:filename", auth.checkToken, routeReadOne);
 app.get("/allusers", auth.checkToken, routeAllUsers);
+
 app.put("/createone", auth.checkToken, routeCreateOne);
 app.put("/updateone", auth.checkToken, routeUpdateOne);
 app.put("/updateusers", auth.checkToken, routeUpdateUsers);
