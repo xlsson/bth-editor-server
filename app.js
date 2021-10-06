@@ -6,17 +6,7 @@ const express = require("express");
 const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require("body-parser");
-
-const jwt = require('jsonwebtoken');
-
-let config;
-let secret;
-
-if (process.env.NODE_ENV === 'test') {
-    config = require("./db/testconfig.json");
-} else {
-    config = require("./db/config.json");
-}
+const auth = require('./db/auth');
 
 // Define routes
 const routeCreateUser = require('./routes/createuser');
@@ -37,8 +27,6 @@ if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
     app.use(morgan('combined'));
 }
 
-secret = config.jwtsecret;
-
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -48,26 +36,12 @@ app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
 
 // Routes with JWT verification
-app.get("/readall/:user", (req, res, next) => checkToken(req, res, next), routeReadAll);
-app.get("/readone/:filename", (req, res, next) => checkToken(req, res, next), routeReadOne);
-app.get("/allusers", (req, res, next) => checkToken(req, res, next), routeAllUsers);
-app.put("/createone", (req, res, next) => checkToken(req, res, next), routeCreateOne);
-app.put("/updateone", (req, res, next) => checkToken(req, res, next), routeUpdateOne);
-app.put("/updateusers", (req, res, next) => checkToken(req, res, next), routeUpdateUsers);
-
-function checkToken(req, res, next) {
-    const token = req.headers['x-access-token'];
-
-    jwt.verify(token, secret, function(err, decoded) {
-        if (err) {
-            res.locals.tokenIsVerified = false;
-        } else {
-            res.locals.tokenIsVerified = true;
-        }
-        next();
-    });
-}
-
+app.get("/readall/:user", (req, res, next) => auth.checkToken(req, res, next), routeReadAll);
+app.get("/readone/:filename", (req, res, next) => auth.checkToken(req, res, next), routeReadOne);
+app.get("/allusers", (req, res, next) => auth.checkToken(req, res, next), routeAllUsers);
+app.put("/createone", (req, res, next) => auth.checkToken(req, res, next), routeCreateOne);
+app.put("/updateone", (req, res, next) => auth.checkToken(req, res, next), routeUpdateOne);
+app.put("/updateusers", (req, res, next) => auth.checkToken(req, res, next), routeUpdateUsers);
 
 // Use socket.io to enable real-time collaborative editing
 const httpServer = require("http").createServer(app);
