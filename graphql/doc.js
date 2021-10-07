@@ -5,6 +5,8 @@ const {
     GraphQLNonNull
 } = require('graphql');
 
+const dbfunctions = require("./dbfunctions.js");
+
 const DocType = new GraphQLObjectType({
     name: 'Doc',
     description: 'This represents a doc',
@@ -14,7 +16,9 @@ const DocType = new GraphQLObjectType({
         content: { type: GraphQLNonNull(GraphQLString) },
         allowedusers: {
             type: GraphQLList(GraphQLString)
-        }
+        },
+        ownerName: { type: GraphQLNonNull(GraphQLString) },
+        ownerEmail: { type: GraphQLNonNull(GraphQLString) }
     })
 })
 

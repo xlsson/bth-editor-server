@@ -26,9 +26,9 @@ The following routes are available:
 
 `/readall/:<email>` – GET method, takes a user's unique id = `email` as argument.
 Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns `{ allFilenames: <array>, tokenIsVerified: true }`.
-`<array>` is an array with all filenames where the email in question is among the allowed users.
-If the token does not verify, it returns `{ tokenIsVerified: false }`.
+If the token verifies, it returns `{ allFilenames: <array> }`.
+`<array>` is an array consisting of `{ filename: <filename>, owner: <email> }` where the email in question is among the allowed users.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
 `/readone/:<filename>` – GET method, takes `filename` as argument.
@@ -36,30 +36,30 @@ Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns
 `{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": <array>,  tokenIsVerified: true }`.
 `<array>` is an array of email addresses of the users allowed to edit.
-If the token does not verify, it returns `{ tokenIsVerified: false }`.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
 `/allusers` – GET method, takes no argument.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns
-`{ "allUsers": <array>, tokenIsVerified: true }`.
+`{ "allUsers": <array> }`.
 `<array>` is an array of email addresses of all users in the collection.
-If the token does not verify, it returns `{ tokenIsVerified: false }`.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
 `/createone` – PUT method, takes `filename`, `title`, `content` and `email` as arguments.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, and the
 `filename` property does not already exists in database, it saves the
-created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, tokenIsVerified: true }`.
-If the token does not verify, it returns `{ acknowledged: false, tokenIsVerified: false }`.
-If the token verifies, but the filename already exists, it returns `{ acknowledged: false, tokenIsVerified: true }`.
+created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
+If the token verifies, but the filename already exists, it returns `{ tokenIsVerified: true }`.
 Return status: 201.
 
 `/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
-If the token does not verify, it returns `{ acknowledged: false, tokenIsVerified: false }`.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
 `/createuser` – POST method, takes `name`, `email` and `password` as arguments.
@@ -72,7 +72,7 @@ Return status: 201.
 The array is an array of users who should be allowed to edit the document.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }`.
-If the token does not verify, it returns `{ tokenIsVerified: false }`.
+If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
 `/verifylogin` – POST method, takes `email` and `password` as arguments.

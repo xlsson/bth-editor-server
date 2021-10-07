@@ -13,7 +13,6 @@ const { graphqlHTTP } = require('express-graphql');
 const { GraphQLSchema } = require("graphql");
 const RootQueryType = require("./graphql/root.js");
 const schema = new GraphQLSchema({ query: RootQueryType });
-const users = require("./graphql/users.js");
 
 // Define routes
 const routeCreateUser = require('./routes/createuser');
@@ -38,6 +37,7 @@ app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+app.use('/graphql', auth.checkToken);
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: visual,
