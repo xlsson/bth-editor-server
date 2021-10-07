@@ -7,13 +7,9 @@ const functions = require('../db/functions.js');
 app.get("/readall/:email", async function(req, res) {
     let result = {};
 
-    if (res.locals.tokenIsVerified) {
-        let email = req.params.email;
-        result.allFilenames = await functions.findByAllowedUser(email);
-        result.tokenIsVerified = true;
-    } else {
-        result.tokenIsVerified = false;
-    }
+    let email = req.params.email;
+    result.allowedDocs = await functions.findByAllowedUser(email);
+
     res.status(200).json(result);
 });
 

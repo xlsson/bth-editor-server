@@ -20,9 +20,8 @@ const auth = {
 
         jwt.verify(token, secret, function(err, decoded) {
             if (err) {
-                res.locals.tokenIsVerified = false;
-            } else {
-                res.locals.tokenIsVerified = true;
+                res.status(200).json({ tokenNotValid: true });
+                return;
             }
             next();
         });

@@ -7,22 +7,14 @@ const functions = require('../db/functions.js');
 app.put("/createone", async function(req, res) {
     let result;
 
-    if (res.locals.tokenIsVerified) {
-        const doc = {
-            filename: req.body.filename,
-            title: req.body.title,
-            content: req.body.content,
-            allowedusers: [req.body.email]
-        };
+    const doc = {
+        filename: req.body.filename,
+        title: req.body.title,
+        content: req.body.content,
+        allowedusers: [req.body.email]
+    };
 
-        result = await functions.createNewDoc(doc);
-        result.tokenIsVerified = true;
-    } else {
-        result = {
-            acknowledged: false,
-            tokenIsVerified: false
-        };
-    }
+    result = await functions.createNewDoc(doc);
 
     res.status(201).json(result);
 });
