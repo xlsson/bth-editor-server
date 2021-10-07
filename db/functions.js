@@ -112,16 +112,25 @@ const functions = {
         let result = [];
         try {
             const criteria = { docs: { $elemMatch: { allowedusers: email } } };
-            const projection = { docs: 1 };
+            const projection = { email: 1, docs: 1 };
 
             // Find all users which have at least one doc
             // where email is among the allowed users
             result = await functions.find(criteria, projection);
 
-            // Save all documents from all users to one single array
+            // Save all documents from all users to one single array of objects
+            // Add document owner to each doc object
             let alldocs = [];
             result.forEach((owner) => {
-                alldocs = alldocs.concat(owner.docs);
+                owner.docs.forEach((doc) => {
+                    alldocs.push({
+                        owner: owner.email,
+                        filename: doc.filename,
+                        title: doc.title,
+                        content: doc.content,
+                        allowedusers: doc.allowedusers
+                    });
+                });
             });
 
             // Save all filenames where the document is among the allowed users
@@ -129,7 +138,10 @@ const functions = {
             let allowedfiles = [];
             alldocs.forEach((doc) => {
                 if (doc.allowedusers.includes(email)) {
-                    allowedfiles.push(doc.filename);
+                    allowedfiles.push({
+                        owner: doc.owner,
+                        filename: doc.filename
+                    });
                 }
             });
 
