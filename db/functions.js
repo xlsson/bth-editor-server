@@ -107,77 +107,6 @@ const functions = {
         return result;
     },
 
-    // Return all filenames where email is among allowedusers
-    findByAllowedUser: async function (email) {
-        let result = [];
-        try {
-            const criteria = { docs: { $elemMatch: { allowedusers: email } } };
-            const projection = { email: 1, docs: 1 };
-
-            // Find all users which have at least one doc
-            // where email is among the allowed users
-            result = await functions.find(criteria, projection);
-
-            // Save all documents from all users to one single array of objects
-            // Add document owner to each doc object
-            let alldocs = [];
-            result.forEach((owner) => {
-                owner.docs.forEach((doc) => {
-                    alldocs.push({
-                        owner: owner.email,
-                        filename: doc.filename,
-                        title: doc.title,
-                        content: doc.content,
-                        allowedusers: doc.allowedusers
-                    });
-                });
-            });
-
-            // Save all filenames where the document is among the allowed users
-            // to an array
-            let allowedfiles = [];
-            alldocs.forEach((doc) => {
-                if (doc.allowedusers.includes(email)) {
-                    allowedfiles.push({
-                        owner: doc.owner,
-                        filename: doc.filename
-                    });
-                }
-            });
-
-            result = allowedfiles;
-
-        } catch (err) {
-            console.log(err);
-            result = err;
-        }
-        return result;
-    },
-
-    // Return file info with matching filename
-    findByFilename: async function (filename) {
-        let result;
-        try {
-            const criteria = { docs: { $elemMatch: { filename: filename } } };
-            const projection = { "docs.$": 1, name: 1, email: 1 };
-            const limit = 1;
-
-            result = await functions.find(criteria, projection, limit);
-
-            result = {
-                ownerName: result[0].name,
-                ownerEmail: result[0].email,
-                title: result[0].docs[0].title,
-                content: result[0].docs[0].content,
-                allowedusers: result[0].docs[0].allowedusers
-            };
-        } catch (err) {
-            console.log(err);
-            result = err;
-        }
-        return result;
-    },
-
     // Return array with all filenames in the collection
     getAllFilenames: async function () {
         let documents = [];
@@ -196,21 +125,6 @@ const functions = {
         await database.client.close();
 
         return filenames;
-    },
-
-    // Return array with all user emails in the collection
-    getAllUsers: async function () {
-        let users = [];
-        const database = await databaseConnection.getDb();
-        let all = await database.collection.find({}).toArray();
-
-        all.forEach((user) => {
-            users.push(user.email);
-        });
-
-        await database.client.close();
-
-        return users;
     }
 };
 

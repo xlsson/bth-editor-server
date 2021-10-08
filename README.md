@@ -24,26 +24,9 @@ server automatically whenever a file is updated.
 ### Available routes
 The following routes are available:
 
-`/readall/:<email>` – GET method, takes a user's unique id = `email` as argument.
+`/graphql` – POST method, takes a graphql query object as its body.
 Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns `{ allFilenames: <array> }`.
-`<array>` is an array consisting of `{ filename: <filename>, owner: <email> }` where the email in question is among the allowed users.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-Return status: 200.
-
-`/readone/:<filename>` – GET method, takes `filename` as argument.
-Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns
-`{ "ownerName": <name>, "ownerEmail": <email>, "title": <title>, "content": <content>, "allowedusers": <array>,  tokenIsVerified: true }`.
-`<array>` is an array of email addresses of the users allowed to edit.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-Return status: 200.
-
-`/allusers` – GET method, takes no argument.
-Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns
-`{ "allUsers": <array> }`.
-`<array>` is an array of email addresses of all users in the collection.
+If the token verifies, it returns an object with the requested data.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
