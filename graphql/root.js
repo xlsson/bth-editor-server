@@ -45,7 +45,7 @@ const RootQueryType = new GraphQLObjectType({
         allowedDocs: {
             type: GraphQLList(DocType),
             args: {
-                email: {type: GraphQLString }
+                email: { type: GraphQLString }
             },
             description: 'All files that a user is allowed to edit',
             resolve: async function(parent, args) {

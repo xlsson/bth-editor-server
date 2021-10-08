@@ -37,7 +37,6 @@ const dbfunctions = {
                 }
             });
         });
-        console.log(alloweddocs);
         return alloweddocs;
     },
 
@@ -68,7 +67,6 @@ const dbfunctions = {
             result = err;
         }
 
-        console.log(result);
         return result;
     },
 };
