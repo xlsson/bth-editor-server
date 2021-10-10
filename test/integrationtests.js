@@ -65,16 +65,20 @@ describe('Test database routes', function() {
         client.close(done);
     });
 
-    describe('Read all documents: GET /readall/<email>', () => {
-        it('Request returns status 200 and token is verified', (done) => {
+    describe('Get all docs for one user, using a graphql route', () => {
+        it('Request returns status 200 and returns expected document', (done) => {
             chai.request(server)
-                .get("/readall/johnny@mustermann.de")
+                .post("/graphql")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
                 .set('x-access-token', testUserToken)
+                .send({
+                    query: '{ allowedDocs (email: "johnny@mustermann.de") { filename } }'
+                })
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.an("object");
-                    res.body.tokenIsVerified.should.equal(true);
-                    res.body.allFilenames[0].should.equal("meinbuch");
+                    res.body.data.should.be.an("object");
+                    res.body.data.allowedDocs[0].filename.should.equal("meinbuch");
                     done();
                 });
         });
@@ -101,15 +105,20 @@ describe('Test database routes', function() {
         });
     });
 
-    describe('Read one document: GET /readone/<filename>', () => {
+    describe('Read one document, using a graphql route', () => {
         it('Request returns status 200 and result body contains expected property', (done) => {
             chai.request(server)
-                .get(`/readone/${testUserData.docs[0].filename}`)
+                .post("/graphql")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
                 .set('x-access-token', testUserToken)
+                .send({
+                    query: `{ doc (filename: "${testUserData.docs[0].filename}") { filename, title, content, allowedusers, ownerName, ownerEmail } }`
+                })
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.an("object");
-                    res.body.title.should.equal("Das Buch");
+                    res.body.data.should.be.an("object");
+                    res.body.data.doc.title.should.equal("Das Buch");
                     done();
                 });
         });
