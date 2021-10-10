@@ -7,7 +7,7 @@ const {
 const UserType = require("./user.js");
 const DocType = require("./doc.js");
 
-const dbfunctions = require("./dbfunctions.js");
+const functions = require("../db/functions.js");
 
 const RootQueryType = new GraphQLObjectType({
     name: 'Query',
@@ -20,7 +20,7 @@ const RootQueryType = new GraphQLObjectType({
                 email: { type: GraphQLString }
             },
             resolve: async function(parent, args) {
-                let usersArray = await dbfunctions.getAll();
+                let usersArray = await functions.getAll();
 
                 return usersArray.find(user => user.email === args.email);
             }
@@ -29,7 +29,7 @@ const RootQueryType = new GraphQLObjectType({
             type: GraphQLList(UserType),
             description: 'All users',
             resolve: async function() {
-                return await dbfunctions.getAll();
+                return await functions.getAll();
             }
         },
         doc: {
@@ -39,7 +39,7 @@ const RootQueryType = new GraphQLObjectType({
                 filename: { type: GraphQLString }
             },
             resolve: async function(parent, args) {
-                return dbfunctions.getOneDoc(args.filename);
+                return functions.getOneDoc(args.filename);
             }
         },
         allowedDocs: {
@@ -49,7 +49,7 @@ const RootQueryType = new GraphQLObjectType({
             },
             description: 'All files that a user is allowed to edit',
             resolve: async function(parent, args) {
-                return dbfunctions.getAllowedDocs(args.email);
+                return functions.getAllowedDocs(args.email);
             }
         }
     })

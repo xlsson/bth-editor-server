@@ -5,8 +5,6 @@ const {
     GraphQLNonNull
 } = require('graphql');
 
-const dbfunctions = require("./dbfunctions.js");
-
 const DocType = new GraphQLObjectType({
     name: 'Doc',
     description: 'This represents a doc',

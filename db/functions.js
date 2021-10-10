@@ -4,17 +4,6 @@ const { databaseConnection } = require('./databaseconnection.js');
 const colName = "users";
 
 const functions = {
-
-    find: async function (criteria, projection) {
-        const database = await databaseConnection.getDb();
-        const client = await database.client;
-        const db = await client.db();
-        const col = await db.collection(colName);
-        const res = await col.find(criteria).project(projection).toArray();
-        await client.close();
-        return res;
-    },
-
     createNewDoc: async function (doc) {
         let result;
         let email = doc.allowedusers[0];
@@ -96,7 +85,10 @@ const functions = {
             const criteria = { email: email };
             const projection = { email: 1, name: 1, password: 1 };
 
-            result = await functions.find(criteria, projection);
+            const client = await database.client;
+            const db = await client.db();
+            const col = await db.collection(colName);
+            const result = await col.find(criteria).project(projection).toArray();
         } catch (error) {
             console.log(error);
             result = { acknowledged: "false" };
