@@ -160,7 +160,7 @@ const functions = {
             const client = await database.client;
             const db = await client.db();
             const col = await db.collection(colName);
-            const result = await col.find(criteria).project(projection).toArray();
+            result = await col.find(criteria).project(projection).toArray();
         } catch (error) {
             console.log(error);
             result = { acknowledged: "false" };
