@@ -64,3 +64,7 @@ Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
 both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }`
 if password is wrong. Returns `{ userexists: false }` if user is not in db.
 Return status: 201.
+
+`/printpdf` – POST method, takes `html` as an argument. `html` is the currentContent
+with some extra HTML elements wrapped around it for style.
+Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.

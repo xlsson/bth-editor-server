@@ -18,6 +18,7 @@ const routeVerifyLogin = require('./routes/verifylogin');
 const routeCreateOne = require('./routes/createone');
 const routeUpdateOne = require('./routes/updateone');
 const routeUpdateUsers = require('./routes/updateusers');
+const routePrintPdf = require('./routes/printpdf');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/graphql', graphqlHTTP({
 // Routes without JWT verification
 app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
+app.post("/printpdf", routePrintPdf);
 
 // Routes with JWT verification
 app.put("/createone", auth.checkToken, routeCreateOne);
