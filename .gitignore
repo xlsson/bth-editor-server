@@ -5,3 +5,4 @@ coverage/
 printpdf_OLD.js
 temppdf/
 IGNORE_*.*
+sendgrid.env
