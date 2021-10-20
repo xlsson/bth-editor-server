@@ -2,11 +2,9 @@
 
 const express = require('express');
 const app = express();
-const functions = require('../db/functions.js');
-
-var htmlPdfNode = require('html-pdf-node');
-var path = require('path');
-var fs = require('fs');
+const htmlPdfNode = require('html-pdf-node');
+const path = require('path');
+const fs = require('fs');
 
 app.post("/printpdf", async function(req, res) {
 
