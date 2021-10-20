@@ -8,20 +8,20 @@ const functions = require('../db/functions.js');
 app.post("/createuser", async function(req, res) {
     let password = req.body.password;
 
+    let user = {
+        email: req.body.email,
+        name: req.body.name,
+        docs: []
+    };
+
+    const saltRounds = 10;
+
     //Hashes password and saves hash instead of password
-    bcrypt.hash(password, 10, async function(err, hash) {
-        const user = {
-            email: req.body.email,
-            password: hash,
-            name: req.body.name,
-            docs: []
-        };
+    user.password = await bcrypt.hash(password, saltRounds);
 
-        const result = await functions.createNewUser(user);
+    const result = await functions.createNewUser(user);
 
-        res.status(201).json(result);
-    });
-
+    res.status(201).json(result);
 });
 
 module.exports = app;
