@@ -68,3 +68,7 @@ Return status: 201.
 `/printpdf` – POST method, takes `html` as an argument. `html` is the currentContent
 with some extra HTML elements wrapped around it for style.
 Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.
+
+`/invitesend` – GET method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as arguments.
+Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
+edit `filename`.

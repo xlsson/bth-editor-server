@@ -19,6 +19,7 @@ const routeCreateOne = require('./routes/createone');
 const routeUpdateOne = require('./routes/updateone');
 const routeUpdateUsers = require('./routes/updateusers');
 const routePrintPdf = require('./routes/printpdf');
+const routeInviteSend = require('./routes/invitesend');
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.post("/verifylogin", routeVerifyLogin);
 app.post("/printpdf", routePrintPdf);
 
 // Routes with JWT verification
+app.post("/invitesend", auth.checkToken, routeInviteSend);
 app.put("/createone", auth.checkToken, routeCreateOne);
 app.put("/updateone", auth.checkToken, routeUpdateOne);
 app.put("/updateusers", auth.checkToken, routeUpdateUsers);

@@ -4,3 +4,4 @@ db/config.json
 coverage/
 printpdf_OLD.js
 temppdf/
+IGNORE_*.*
