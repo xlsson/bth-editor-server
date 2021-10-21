@@ -69,7 +69,7 @@ Return status: 201.
 with some extra HTML elements wrapped around it for style.
 Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.
 
-`/invitesend` – POST method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
+`/sendinvite` – POST method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
 Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
 edit `filename`. Returns `{ inviteSent: true }` if message is successfully sent,
