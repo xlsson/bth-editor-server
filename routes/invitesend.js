@@ -5,7 +5,7 @@ const app = express();
 const sgMail = require('@sendgrid/mail');
 const config = require("../db/config.json");
 
-app.post("/invitesend", async function(req, res) {
+app.post("/sendinvite", async function(req, res) {
 
     const recipient = req.body.recipient;
     const inviterName = req.body.inviterName;
@@ -16,9 +16,9 @@ app.post("/invitesend", async function(req, res) {
     let emailContentHtml = `
     <h3>CirrusDocs</h3>
 
-    <p>Hi there! <strong>${inviterName}</strong> has just invited you to
-    join in editing their document "${filename}" at CirrusDocs – your new
-    favourite collaborative cloud editor service.</p>
+    <p>Hi there! <strong>${inviterName}</strong> (${inviterEmail}) has invited
+    you to join in editing their document "${filename}" ("${title}") at CirrusDocs –
+    your new favourite collaborative online word processor.</p>
     <p>Simply follow this link, register using this e-mail
     address, and open "${filename}" to start editing:</p>
     <a href="https://www.student.bth.se/~riax20/editor/">Click here</a>
@@ -33,6 +33,10 @@ app.post("/invitesend", async function(req, res) {
         html: emailContentHtml
     };
 
+    let result = {
+        inviteSent: true
+    };
+
     // using Twilio SendGrid's v3 Node.js Library
     // https://github.com/sendgrid/sendgrid-nodejs
     sgMail.setApiKey(config.sendgridsecret);
@@ -41,9 +45,10 @@ app.post("/invitesend", async function(req, res) {
         .send(msg)
         .catch((error) => {
             console.error(error);
+            result.inviteSent = false;
         });
 
-    res.status(202).send(true);
+    res.status(202).json(result);
 });
 
 module.exports = app;

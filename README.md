@@ -72,4 +72,5 @@ Creates a PDF file of the current document and opens it in a new tab for downloa
 `/invitesend` – POST method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
 Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
-edit `filename`.
+edit `filename`. Returns `{ inviteSent: true }` if message is successfully sent,
+otherwise `{ inviteSent: false }`.
