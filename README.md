@@ -30,7 +30,7 @@ If the token verifies, it returns an object with the requested data.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
-`/createone` – PUT method, takes `filename`, `title`, `content` and `email` as arguments.
+`/createone` – PUT method, takes `filename`, `title`, `content` and `email` as body properties.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, and the
 `filename` property does not already exists in database, it saves the
@@ -39,36 +39,37 @@ If the token does not verify, it returns `{ tokenNotValid: true }`.
 If the token verifies, but the filename already exists, it returns `{ tokenIsVerified: true }`.
 Return status: 201.
 
-`/updateone` – PUT method, takes `filename`, `title` and `content` as arguments.
+`/updateone` – PUT method, takes `filename`, `title` and `content` as body properties.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
-`/createuser` – POST method, takes `name`, `email` and `password` as arguments.
+`/createuser` – POST method, takes `name`, `email` and `password` as body properties.
 If `email`is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
 If `email` already exists, it does not save the user, and instead returns
 `{ acknowledged: true }`.
 Return status: 201.
 
-`/updateusers` – PUT method, takes `filename` and `allowedusers` (an array) as arguments.
+`/updateusers` – PUT method, takes `filename` and `allowedusers` (an array) as body properties.
 The array is an array of users who should be allowed to edit the document.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }`.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 
-`/verifylogin` – POST method, takes `email` and `password` as arguments.
+`/verifylogin` – POST method, takes `email` and `password` as body properties.
 Tries to find user in db. Checks password against password hash stored in db.
 Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
 both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }`
 if password is wrong. Returns `{ userexists: false }` if user is not in db.
 Return status: 201.
 
-`/printpdf` – POST method, takes `html` as an argument. `html` is the currentContent
+`/printpdf` – POST method, takes `html` as its only query parameter. `html` is the currentContent
 with some extra HTML elements wrapped around it for style.
 Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.
 
-`/invitesend` – GET method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as arguments.
+`/invitesend` – POST method, takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
+Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
 edit `filename`.
