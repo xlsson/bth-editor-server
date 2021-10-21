@@ -48,7 +48,7 @@ Return status: 200.
 `/createuser` – POST method, takes `name`, `email` and `password` as body properties.
 If `email`is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
 If `email` already exists, it does not save the user, and instead returns
-`{ acknowledged: true }`.
+`{ acknowledged: false }`.
 Return status: 201.
 
 `/updateusers` – PUT method, takes `filename` and `allowedusers` (an array) as body properties.
