@@ -9,6 +9,7 @@ app.put("/createone", async function(req, res) {
 
     const doc = {
         filename: req.body.filename,
+        code: req.body.code,
         title: req.body.title,
         content: req.body.content,
         allowedusers: [req.body.email]

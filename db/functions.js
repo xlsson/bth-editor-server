@@ -30,13 +30,13 @@ const functions = {
         }
     },
 
-    getAllowedDocs: async function (email) {
+    getAllowedDocs: async function (email, codemode) {
         let all = await functions.getAll();
 
         let alloweddocs = [];
         all.forEach((owner) => {
             owner.docs.forEach((doc) => {
-                if (doc.allowedusers.includes(email)) {
+                if ((doc.code === codemode) && (doc.allowedusers.includes(email))) {
                     alloweddocs.push(doc);
                 }
             });
@@ -60,6 +60,7 @@ const functions = {
 
             result = {
                 filename: filename,
+                code: res[0].docs[0].code,
                 title: res[0].docs[0].title,
                 content: res[0].docs[0].content,
                 allowedusers: res[0].docs[0].allowedusers,

@@ -1,7 +1,8 @@
 const {
     GraphQLObjectType,
     GraphQLString,
-    GraphQLList
+    GraphQLList,
+    GraphQLBoolean
 } = require('graphql');
 
 const UserType = require("./user.js");
@@ -45,11 +46,14 @@ const RootQueryType = new GraphQLObjectType({
         allowedDocs: {
             type: GraphQLList(DocType),
             args: {
-                email: { type: GraphQLString }
+                email: { type: GraphQLString },
+                code: { type: GraphQLBoolean }
             },
-            description: 'All files that a user is allowed to edit',
+            description: `
+                All files that a user is allowed to edit,
+                depending on the current mode (code or normal)`,
             resolve: async function(parent, args) {
-                return functions.getAllowedDocs(args.email);
+                return functions.getAllowedDocs(args.email, args.code);
             }
         }
     })
