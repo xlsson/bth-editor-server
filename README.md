@@ -24,13 +24,17 @@ server automatically whenever a file is updated.
 ### Available routes
 The following routes are available:
 
-`/graphql` – POST method, takes a graphql query object as its body.
-Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns an object with the requested data.
+`/graphql` – POST method, takes a GraphQL query object as its body.
+Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
+The server is built to respond to the following GraphQL query objects used by the frontend:
+`{ allowedDocs (email: <email>, code: <code>) { filename } }`, where <email> is the current user's email, and <code>  is set to `true` if code mode is currently on, otherwise `false`. Returns the filenames for all documents that the user is allowed to edit, within the current mode.
+`{ allowedDocs (email: <email>, code: <code>) { filename } }`, where <email> is the current user's email, and <code>  is set to `true` if code mode is currently on, otherwise `false`. Returns a list of all documents that the user is allowed to edit, within the current mode.
+`{ doc (filename: <filename> ) { filename, title, content, allowedusers, ownerName, ownerEmail } }` returns the document with the corresponding filename.
+`{ users { email } }` returns the e-mail addresses of all users in the database.
 
-`/createone` – PUT method, takes `filename`, `title`, `content` and `email` as body properties.
+`/createone` – PUT method, takes `filename`, `code`, `title`, `content` and `email` as body properties.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, and the
 `filename` property does not already exists in database, it saves the
