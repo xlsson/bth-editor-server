@@ -12,6 +12,7 @@ app.put("/createone", async function(req, res) {
         code: req.body.code,
         title: req.body.title,
         content: req.body.content,
+        comments: req.body.comments,
         allowedusers: [req.body.email]
     };
 

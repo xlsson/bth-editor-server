@@ -63,6 +63,7 @@ const functions = {
                 code: res[0].docs[0].code,
                 title: res[0].docs[0].title,
                 content: res[0].docs[0].content,
+                comments: res[0].docs[0].comments,
                 allowedusers: res[0].docs[0].allowedusers,
                 ownerName: res[0].name,
                 ownerEmail: res[0].email

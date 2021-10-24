@@ -10,7 +10,8 @@ app.put("/updateone", async function(req, res) {
     const doc = {
         filename: req.body.filename,
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        comments: req.body.comments
     };
 
     result = await functions.updateDoc(doc);

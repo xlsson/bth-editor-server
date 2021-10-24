@@ -6,6 +6,8 @@ const {
     GraphQLNonNull
 } = require('graphql');
 
+const CommentType = require("./comment.js");
+
 const DocType = new GraphQLObjectType({
     name: 'Doc',
     description: 'This represents a doc',
@@ -14,6 +16,7 @@ const DocType = new GraphQLObjectType({
         code: { type: GraphQLNonNull(GraphQLBoolean) },
         title: { type: GraphQLNonNull(GraphQLString) },
         content: { type: GraphQLNonNull(GraphQLString) },
+        comments: { type: GraphQLList(CommentType) },
         allowedusers: {
             type: GraphQLList(GraphQLString)
         },
