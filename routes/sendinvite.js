@@ -14,11 +14,11 @@ app.post("/sendinvite", async function(req, res) {
     const title   = req.body.title;
 
     let emailContentHtml = `
-    <h3>CirrusDocs</h3>
-
-    <p>Hi there! <strong>${inviterName}</strong> (${inviterEmail}) has invited
+    <p>Hi there!</p>
+    <p><strong>${inviterName}</strong> (${inviterEmail}) has invited
     you to join in editing their document "${filename}" ("${title}") at CirrusDocs –
     your new favourite collaborative online word processor.</p>
+
     <p>Simply follow this link, register using this e-mail
     address, and open "${filename}" to start editing:</p>
     <a href="https://www.student.bth.se/~riax20/editor/">Click here</a>
@@ -29,7 +29,7 @@ app.post("/sendinvite", async function(req, res) {
     const msg = {
         to: recipient,
         from: 'riax20@student.bth.se',
-        subject: `CirrusDocs: ${inviterName} has invited you to edit "${filename}"`,
+        subject: `CirrusDocs – invitation to edit from ${inviterName}`,
         html: emailContentHtml
     };
 

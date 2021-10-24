@@ -109,7 +109,11 @@ const functions = {
 
         let result = await database.collection.updateOne(
             criteria,
-            { $set: { "docs.$.content": doc.content, "docs.$.title": doc.title } }
+            { $set: {
+                "docs.$.content": doc.content,
+                "docs.$.title": doc.title,
+                "docs.$.comments": doc.comments
+            } }
         );
 
         await database.client.close();
