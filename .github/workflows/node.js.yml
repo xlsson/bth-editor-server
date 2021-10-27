@@ -41,7 +41,12 @@ jobs:
     - name: Create env file
       run: |
         touch ./db/githubconfig.json
-        echo '{ "SENDGRID": "${{ secrets.SENDGRID }}" }' >> ./db/githubconfig.json
+        echo '{' >> ./db/githubconfig.json
+        echo '    "username": "${{ secrets.USERNAME }}",' >> ./db/githubconfig.json
+        echo '    "password": "${{ secrets.PASSWORD }}",' >> ./db/githubconfig.json
+        echo '    "jwtsecret": "${{ secrets.JWTSECRET }}",' >> ./db/githubconfig.json
+        echo '    "sendgridsecret": "${{ secrets.SENDGRID }}"' >> ./db/githubconfig.json
+        echo '}' >> ./db/githubconfig.json
 
     - name: Run tests
       run: npm test
