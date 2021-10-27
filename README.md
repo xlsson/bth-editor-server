@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/xlsson/bth-editor-server.svg?branch=main)](https://app.travis-ci.com/xlsson/bth-editor-server)
+![Github Actions](https://github.com/xlsson/bth-editor-server/actions/workflows/node.js.yml/badge.svg)
 
 # bth-editor-server
 Server for the reactjs collaborative editor ([xlsson/bth-reactjs-editor](https://github.com/xlsson/bth-reactjs-editor)), for the course JavaScript-based web frameworks at Blekinge Technical University (BTH). The server works as an API for a MongoDB database, stored
@@ -29,9 +29,8 @@ Takes a JWT token as an `x-access-token` header. If the token verifies, it retur
 If the token does not verify, it returns `{ tokenNotValid: true }`.
 Return status: 200.
 The server is built to respond to the following GraphQL query objects used by the frontend:
-`{ allowedDocs (email: <email>, code: <code>) { filename } }`, where <email> is the current user's email, and <code>  is set to `true` if code mode is currently on, otherwise `false`. Returns the filenames for all documents that the user is allowed to edit, within the current mode.
-`{ allowedDocs (email: <email>, code: <code>) { filename } }`, where <email> is the current user's email, and <code>  is set to `true` if code mode is currently on, otherwise `false`. Returns a list of all documents that the user is allowed to edit, within the current mode.
-`{ doc (filename: <filename> ) { filename, title, content, allowedusers, ownerName, ownerEmail } }` returns the document with the corresponding filename.
+`{ allowedDocs (email: <email>, code: <code>) { filename } }`, where `<email>` is the current user's email, and `<code>`  is set to `true` if code mode is currently on, otherwise `false`. Returns the filenames for all documents that the user is allowed to edit, within the current mode.
+`{ doc (filename: <filename> ) { filename, title, content, allowedusers, ownerName, ownerEmail, comments { nr, text } } }` returns the document with the corresponding filename.
 `{ users { email } }` returns the e-mail addresses of all users in the database.
 
 `/createone` – PUT method, takes `filename`, `code`, `title`, `content` and `email` as body properties.

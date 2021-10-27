@@ -1,5 +1,7 @@
 process.env.NODE_ENV = 'test';
 
+console.log(env.HEJ);
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../app.js');
