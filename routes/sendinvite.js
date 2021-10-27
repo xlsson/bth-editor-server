@@ -3,7 +3,12 @@
 const express = require('express');
 const app = express();
 const sgMail = require('@sendgrid/mail');
-const config = require("../db/config.json");
+
+if (process.env.NODE_ENV === 'test') {
+    let config = require("../db/githubconfig.json");
+} else {
+    let config = require("../db/config.json");
+}
 
 app.post("/sendinvite", async function(req, res) {
 
