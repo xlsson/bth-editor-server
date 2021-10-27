@@ -5,7 +5,7 @@ const app = express();
 const sgMail = require('@sendgrid/mail');
 
 if (process.env.NODE_ENV === 'test') {
-    let config = require("../db/githubconfig.json");
+    let config = require("../db/testconfig.json");
 } else {
     let config = require("../db/config.json");
 }
