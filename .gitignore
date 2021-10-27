@@ -1,5 +1,6 @@
 node_modules/
 db/config.json
+db/testconfig.json
 .nyc_output/
 coverage/
 printpdf_OLD.js
