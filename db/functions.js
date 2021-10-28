@@ -4,18 +4,11 @@ const { databaseConnection } = require('./databaseconnection.js');
 const colName = "users";
 
 const functions = {
-    getAll: async function (res=undefined) {
+    getAll: async function () {
         const database = await databaseConnection.getDb();
         try {
             let result = await database.collection.find({}).toArray();
-
-            if (res === undefined) {
-                return result;
-            }
-
-            return res.json({
-                data: result
-            });
+            return result;
         } catch (e) {
             return res.json({
                 errors: {
