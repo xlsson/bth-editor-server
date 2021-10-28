@@ -2,6 +2,10 @@
  * @fileOverview Auth middleware, checking if the token in the header
  * can be verified.
  * @author - xlsson
+ *
+ * @type {Object} config -          Object containing login credentials
+ * @type {string} secret -          The JWT secret used to decode the token,
+ *                                  as specified in the config file.
  */
 
 "use strict";
