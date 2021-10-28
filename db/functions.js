@@ -56,6 +56,7 @@ const functions = {
                 }
             });
         });
+
         return alloweddocs;
     },
 
@@ -294,7 +295,6 @@ const functions = {
         } finally {
             await database.client.close();
         }
-        console.log(result);
 
         return result;
     },
