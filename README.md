@@ -41,7 +41,7 @@ If the token verifies, and the
 `filename` property does not already exists in database, it saves the
 created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
 If the token does not verify, it returns `{ tokenNotValid: true }`.
-If the token verifies, but the filename already exists, it returns `{ acknowledged: false }`.
+If the token verifies, but a property is missing, or the filename already exists, it returns `{ acknowledged: false }`.
 Return status: 201.
 
 #### `/createuser` (POST)
