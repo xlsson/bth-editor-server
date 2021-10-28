@@ -29,7 +29,7 @@ const functions = require('../db/functions.js');
  *
  * If the e-mail does not already exist in the database:
  * @return {boolean} result.acknowledged     Set to true
- * @return {string}  result.insertedId       The objectid of the new document
+ * @return {string}  result.insertedId       The objectid of the new user
  */
 app.post("/createuser", async function(req, res) {
     let password = req.body.password;
