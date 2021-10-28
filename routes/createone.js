@@ -47,7 +47,16 @@ app.put("/createone", async function(req, res) {
         allowedusers: [req.body.email]
     };
 
-    result = await functions.createNewDoc(doc);
+    let undefinedProperty = false;
+    Object.keys(doc).forEach((key) => {
+        if (doc[key] === undefined) { undefinedProperty = true; }
+    });
+
+    if (!undefinedProperty) {
+        result = await functions.createNewDoc(doc);
+    } else {
+        result = { acknowledged: false };
+    }
 
     res.status(201).json(result);
 });
