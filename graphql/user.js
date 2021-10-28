@@ -1,3 +1,9 @@
+/**
+ * @fileOverview UserType class, serving as the object representing a user for the
+ * GraphQL routes.
+ * @author - xlsson
+ */
+
 const {
     GraphQLObjectType,
     GraphQLString,

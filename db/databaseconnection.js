@@ -1,3 +1,8 @@
+/**
+ * @fileOverview Functions handling the database connection.
+ * @author - xlsson
+ */
+
 "use strict";
 
 const mongo = require("mongodb").MongoClient;

@@ -1,3 +1,8 @@
+/**
+ * @fileOverview Verify username and password
+ * @author - xlsson
+ */
+
 "use strict";
 
 const express = require('express');
@@ -15,6 +20,26 @@ if (process.env.NODE_ENV === 'test') {
     config = require("../db/config.json");
 }
 
+/**
+ * Route to verify that a bcrypt hash of a password matches hash stored in db.
+ *
+ * @async
+ *
+ * @param {object} req                  Request object, consisting of:
+ * @param {string} req.body.email       E-mail address = username
+ * @param {string} req.body.password    Unhashed password
+ * @param {object} res                  Result object
+ *
+ * @throws Error if email = username is not found in the database
+ *
+ * @return {object} result              The result as a JSON object.
+ * @return {string} result.userexists   ("true" or "false")
+ *
+ * If result.userexists = "true":
+ * @return {string} result.verified     ("true" or "false")
+ * @return {string} result.name         User's name
+ * @return {string} result.email        User's email
+ */
 app.post("/verifylogin", async function(req, res) {
     const email = req.body.email;
     const password = req.body.password;
@@ -34,7 +59,7 @@ app.post("/verifylogin", async function(req, res) {
                 email: email
             };
 
-            //Create a token for this session
+            /** Create a token for this session */
             if (isVerified) {
                 const payload = { email: email };
                 const secret = config.jwtsecret;

@@ -1,3 +1,9 @@
+/**
+ * @fileOverview RootQueryType class, serving as the root object for the
+ * GraphQL routes.
+ * @author - xlsson
+ */
+
 const {
     GraphQLObjectType,
     GraphQLString,

@@ -1,3 +1,9 @@
+/**
+ * @fileOverview Update the array of users allowed to edit, and send an
+ * invitation e-mail using SendGrid.
+ * @author - xlsson
+ */
+
 "use strict";
 
 const express = require('express');
@@ -10,6 +16,23 @@ if (process.env.NODE_ENV === 'test') {
     let config = require("../db/config.json");
 }
 
+/**
+ * Update the array of users allowed to edit, and send an invitation e-mail
+ * using SendGrid.
+ *
+ * @async
+ *
+ * @param {object} req                   Request object, consisting of:
+ * @param {string} req.body.recipient    E-mail address of recipient
+ * @param {string} req.body.inviterName  Name of inviting user
+ * @param {string} req.body.filename     Filename of file to update
+ * @param {string} req.body.title        Title of file to update
+ * @param {object} res                   Result object
+ *
+ * @return {object} result              The result as a JSON object.
+ *
+ * @return {boolean} result.inviteSent   true/false if successful/unsuccessful
+ */
 app.post("/sendinvite", async function(req, res) {
 
     const recipient = req.body.recipient;
@@ -21,14 +44,15 @@ app.post("/sendinvite", async function(req, res) {
     let emailContentHtml = `
     <p>Hi there!</p>
     <p><strong>${inviterName}</strong> (${inviterEmail}) has invited
-    you to join in editing their document "${filename}" ("${title}") at CirrusDocs –
+    you to join in editing their document <i>${filename}</i> ("${title}") at CirrusDocs –
     your new favourite collaborative online word processor.</p>
 
-    <p>Simply follow this link, register using this e-mail
-    address, and open "${filename}" to start editing:</p>
+    <p>Follow this link, register using your e-mail
+    address (${recipient}), and open <i>${filename}</i> to start editing:</p>
     <a href="https://www.student.bth.se/~riax20/editor/">Click here</a>
     <br><br>
-    <i>Your CirrusDocs team</i>
+    <p>Happy editing,</p>
+    <i>${inviterName} and CirrusDocs</i>
     `;
 
     const msg = {
@@ -42,8 +66,8 @@ app.post("/sendinvite", async function(req, res) {
         inviteSent: true
     };
 
-    // using Twilio SendGrid's v3 Node.js Library
-    // https://github.com/sendgrid/sendgrid-nodejs
+    /** using Twilio SendGrid's v3 Node.js Library */
+    /** https://github.com/sendgrid/sendgrid-nodejs */
     sgMail.setApiKey(config.sendgridsecret);
 
     sgMail

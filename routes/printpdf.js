@@ -1,3 +1,9 @@
+/**
+ * @fileOverview Convert file contents = a HTML string, to a PDF blob to allow
+ * printing.
+ * @author - xlsson
+ */
+
 "use strict";
 
 const express = require('express');
@@ -6,6 +12,18 @@ const htmlPdfNode = require('html-pdf-node');
 const path = require('path');
 const fs = require('fs');
 
+/**
+ * Convert file contents = a HTML string, to a PDF blob to allow printing
+ *
+ * @async
+ *
+ * @param {object} req                   Request object, consisting of:
+ * @param {string} req.body.html         HTML representation of the file title
+ *                                       and its content.
+ *
+ * @return {ReadStream}                  ReadStream carrying the generated PDF
+ *                                       file blob.
+ */
 app.post("/printpdf", async function(req, res) {
 
     const html = req.body.html;

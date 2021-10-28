@@ -1,3 +1,9 @@
+/**
+ * @fileOverview CommentType class, serving as the object representing an array
+ * of comments for the GraphQL routes.
+ * @author - xlsson
+ */
+
 const {
     GraphQLObjectType,
     GraphQLInt,

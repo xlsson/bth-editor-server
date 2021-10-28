@@ -1,3 +1,9 @@
+/**
+ * @fileOverview DocType class, serving as the object representing a file for the
+ * GraphQL routes.
+ * @author - xlsson
+ */
+
 const {
     GraphQLObjectType,
     GraphQLString,

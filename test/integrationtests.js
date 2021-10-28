@@ -1,3 +1,9 @@
+/**
+ * @fileOverview Integration tests using Mocha with the Chai and Chai-Http libraries
+ * A local MongoDB database is created for the tests.
+ * @author - xlsson
+ */
+
 process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
@@ -21,7 +27,7 @@ chai.use(chaiHttp);
 describe('Test database routes', function() {
 
     before( async function() {
-    // runs once before the first test in this block: drops database
+    /** Run once before the first test in this block: drops the database */
         client = await mongo.connect("mongodb://localhost/test", {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -29,7 +35,7 @@ describe('Test database routes', function() {
 
         const db = await client.db();
 
-        // Setup database collection by first wiping it and then adding a document
+        /** Setup database collection by first wiping it and then adding a document */
         await db.dropDatabase();
 
         testUserData = {
@@ -56,12 +62,12 @@ describe('Test database routes', function() {
 
         testUserId = testUser.insertedId.toString();
 
-        // Create a JSON web token needed for http requests
+        /** Create a JSON web token needed for http requests */
         testUserToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
     });
 
     after( function(done) {
-    // runs once after the last test in this block: closes database connection
+    /** Run once after the last test in this block: closes database connection */
         client.close(done);
     });
 

@@ -1,3 +1,10 @@
+/**
+ * @fileOverview Server for CirrusDocs, a real-time collaborative editor.
+ * @author - xlsson
+ * {@link https://github.com/xlsson/bth-editor-server}
+ * {@link https://github.com/xlsson/bth-reactjs-editor}
+ */
+
 "use strict";
 
 const express = require("express");
@@ -6,13 +13,14 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const auth = require('./db/auth');
 
+/** GraphQL middleware to enable GraphQL routes using its query language */
 const visual = true;
 const { graphqlHTTP } = require('express-graphql');
 const { GraphQLSchema } = require("graphql");
 const RootQueryType = require("./graphql/root.js");
 const schema = new GraphQLSchema({ query: RootQueryType });
 
-// Define routes
+/** Route definitions */
 const routeCreateUser = require('./routes/createuser');
 const routeVerifyLogin = require('./routes/verifylogin');
 const routeCreateOne = require('./routes/createone');
@@ -26,16 +34,16 @@ const app = express();
 const port = process.env.PORT || 1234;
 
 if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
-    // Unless test or dev environment, use morgan to log at command line
+    /** Unless test or dev environment, use morgan to log at command line */
     app.use(morgan('combined'));
 } else {
-    // If test or dev, console log environment variable
+    /** If test or dev, console log environment variable */
     console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
 }
 
 app.use(cors());
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/graphql', auth.checkToken);
 app.use('/graphql', graphqlHTTP({
@@ -43,18 +51,17 @@ app.use('/graphql', graphqlHTTP({
     graphiql: visual,
 }));
 
-// Routes without JWT verification
+/** Routes without JWT verification */
 app.post("/createuser", routeCreateUser);
 app.post("/verifylogin", routeVerifyLogin);
 app.post("/printpdf", routePrintPdf);
 
-// Routes with JWT verification
+/** Routes with JWT verification */
 app.post("/sendinvite", auth.checkToken, routeSendInvite);
 app.put("/createone", auth.checkToken, routeCreateOne);
 app.put("/updateone", auth.checkToken, routeUpdateOne);
 app.put("/updateusers", auth.checkToken, routeUpdateUsers);
 
-// Use socket.io to enable real-time collaborative editing
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
     cors: {
@@ -63,6 +70,17 @@ const io = require("socket.io")(httpServer, {
     }
 });
 
+/**
+ * Use socket.IO to enable real-time editing over web sockets.
+ *
+ * @param {object} socket       A Socket instance
+ * @param {string} room         The room to enter/leave. Room = filename.
+ * @param {object} data         The data being received and emitted.
+ * @param {string} data.room    The room to emit to.
+ * @param {string} data.title   File title
+ * @param {string} data.content File contents
+ * @param {array} data.comments Array of comments
+ */
 io.on('connection', function(socket) {
     socket.on('join', function(room) {
         socket.join(room);
