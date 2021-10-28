@@ -1,9 +1,22 @@
+/**
+ * @fileOverview Functions serving the GraphQL and other routes by sending
+ * queries to the MongoDB database.
+ * @author - xlsson
+ *
+ * @type {string} colName -         The collection name
+ */
+
 "use strict";
 
 const { databaseConnection } = require('./databaseconnection.js');
 const colName = "users";
 
 const functions = {
+    /**
+     * Get the whole collection, without filters.
+     *
+     * @return {object} result  The whole database collection
+     */
     getAll: async function () {
         const database = await databaseConnection.getDb();
         try {
@@ -23,6 +36,15 @@ const functions = {
         }
     },
 
+    /**
+     * Get all filenames where the user is allowed to edit (based on the current
+     * mode used in the editor: code or text)
+     *
+     * @param {string} email        E-mail = username of user
+     * @param {boolean} codemode    True if code mode, false if normal text mode
+     *
+     * @return {array} alloweddocs  An array of filenames
+     */
     getAllowedDocs: async function (email, codemode) {
         let all = await functions.getAll();
 
@@ -37,7 +59,21 @@ const functions = {
         return alloweddocs;
     },
 
-    // Return owner email and name based on filename
+    /**
+     * Get one file based on filename
+     *
+     * @param {string} filename     Filename
+     *
+     * @return {Object} result              The file, with these properties:
+     * @return {String} result.filename     Filename
+     * @return {Boolean} result.code        Mode (true if code mode, false if text)
+     * @return {String} result.title        Title
+     * @return {String} result.content      Content
+     * @return {Array} result.comments      Array of comments (objects)
+     * @return {Array} result.allowedusers  Array of users allowed to edit (strings)
+     * @return {String} result.ownerName    Name of file owner
+     * @return {String} result.ownerEmail   E-mail of file owner
+     */
     getOneDoc: async function (filename) {
         let result;
         const database = await databaseConnection.getDb();
@@ -71,10 +107,34 @@ const functions = {
 
         return result;
     },
+
+    /**
+     * Add a new file to a user
+     *
+     * @param {Object} doc             The file to be saved, with its properties:
+     * @param {String} doc.filename    Filename
+     * @param {Boolean} doc.code       True for code mode, false if text
+     * @param {String} doc.title       Title
+     * @param {String} doc.content     Content
+     * @param {Array} doc.comments     Array of comments (objects)
+     * @param {Array} doc.allowedusers Array of all users allowed to edit (strings)
+     *
+     * @return {Object} result              The file, with these properties:
+     *
+     * If the filename is already taken:
+     * @return {boolean} result.acknowledged     Set to false
+     *
+     * If the filename is not taken = success:
+     * @return {boolean} result.acknowledged     Set to true
+     * @return {number}  result.modifiedCount    Number of modified records (always 1)
+     * @return {null}    result.upsertedId       Id of upserted record (always null)
+     * @return {number}  result.upsertedCount    Number of upserted records (always 0)
+     * @return {number}  result.matchedCount     Number of matching records (always 1)
+     */
     createNewDoc: async function (doc) {
         let result;
         let email = doc.allowedusers[0];
-        //Check if filename is unique to the whole collection
+        /** Check if filename is unique to the whole collection */
         const filenames = await functions.getAllFilenames();
 
         if (!filenames.includes(doc.filename)) {
@@ -96,6 +156,24 @@ const functions = {
         return result;
     },
 
+    /**
+     * Update the properties of a file, based on its filename.
+     *
+     * @async
+     *
+     * @param {object} doc              File object, consisting of:
+     * @param {string} doc.filename     Filename
+     * @param {string} doc.title        Title of file
+     * @param {string} doc.content      Contents of file
+     * @param {array}  doc.comments     Array of comment objects
+     *
+     * @return {object} result              The result, with these properties:
+     * @return {boolean} result.acknowledged     Successful operation = true
+     * @return {number}  result.modifiedCount    Number of modified records (always 1)
+     * @return {null}    result.upsertedId       Id of upserted record (always null)
+     * @return {number}  result.upsertedCount    Number of upserted records (always 0)
+     * @return {number}  result.matchedCount     Number of matching records (always 1)
+     */
     updateDoc: async function (doc) {
         const database = await databaseConnection.getDb();
         const criteria = { "docs.filename": doc.filename };
@@ -113,6 +191,23 @@ const functions = {
         return result;
     },
 
+    /**
+     * Update the list of users with editing rights for the specified filename.
+     *
+     * @async
+     *
+     * @param {object} params                Consisting of:
+     * @param {string} params.filename       Filename
+     * @param {array}  params.allowedusers   Array of all users with editing rights
+     *
+     * @return {object}  result                   The result, with these properties:
+     * @return {boolean} result.acknowledged     Successful operation = true
+     * @return {number}  result.modifiedCount    Number of modified records (always 1)
+     * @return {null}    result.upsertedId       Id of upserted record (always null)
+     * @return {number}  result.upsertedCount    Number of upserted records (always 0)
+     * @return {number}  result.matchedCount     Number of matching records (always 1)
+     * @return {array}   result.allowedusers     Array of all users with editing rights
+     */
     updateUsers: async function (params) {
         const database = await databaseConnection.getDb();
         const criteria = { "docs.filename": params.filename };
@@ -128,6 +223,25 @@ const functions = {
         return result;
     },
 
+    /**
+     * Register a new user by adding them as a new document in the collection.
+     *
+     * @async
+     *
+     * @param {object} user              User object, with these properties:
+     * @param {string} user.name     Name of user
+     * @param {string} user.email    User's e-mail = username
+     * @param {string} user.password User's unhashed password
+     *
+     * @return {object} result       Result object, consisting of:
+     *
+     * If the e-mail already exists in the database:
+     * @return {boolean} result.acknowledged    Set to false
+     *
+     * If the e-mail does not already exist in the database:
+     * @return {boolean} result.acknowledged     Set to true
+     * @return {string}  result.insertedId       The objectid of the new document
+     */
     createNewUser: async function (user) {
         const database = await databaseConnection.getDb();
 
@@ -146,7 +260,21 @@ const functions = {
         return result;
     },
 
-    //getOneUser based on email
+    /**
+     * Get one user, based on e-mail.
+     *
+     * @async
+     *
+     * @param {string} email       E-mail address = username
+     *
+     * @return {object} result              The result:
+     * @return {string} result.userexists   ("true" or "false")
+     *
+     * If result.userexists = "true":
+     * @return {string} result.verified     ("true" or "false")
+     * @return {string} result.name         User's name
+     * @return {string} result.email        User's email
+     */
     getOneUser: async function (email) {
         const database = await databaseConnection.getDb();
 
@@ -166,11 +294,18 @@ const functions = {
         } finally {
             await database.client.close();
         }
+        console.log(result);
 
         return result;
     },
 
-    // Return array with all filenames in the collection
+    /**
+     * Get an array with all filenames in the collection.
+     *
+     * @async
+     *
+     * @return {array} filenames    All filenames in the collection
+     */
     getAllFilenames: async function () {
         let documents = [];
         let filenames = [];

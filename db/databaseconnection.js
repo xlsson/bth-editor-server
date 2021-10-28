@@ -2,7 +2,7 @@
  * @fileOverview Functions handling the database connection.
  * @author - xlsson
  *
- * @type {string} collectionName -  The collection name
+ * @type {string} colName -  The collection name
  * @type {Object} config -          Object containing login credentials
  * @type {string} dsn -             The dsn to connect to
  * @type {string} dbname -          The database name, as specified in the config file
@@ -11,7 +11,7 @@
 "use strict";
 
 const mongo = require("mongodb").MongoClient;
-const collectionName = "users";
+const colName = "users";
 
 let config;
 let dsn;
@@ -44,7 +44,7 @@ const databaseConnection = {
         });
 
         const db = await client.db();
-        const collection = await db.collection(collectionName);
+        const collection = await db.collection(colName);
 
         return {
             collection: collection,

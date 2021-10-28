@@ -19,9 +19,7 @@ const functions = require('../db/functions.js');
  * @param {array}  req.body.allowedusers Array of all users with editing rights
  * @param {object} res                   Result object
  *
- * @return {object} result              The result as a JSON object.
- *
- * If the token validates:
+ * @return {object}  result                  The result as a JSON object.
  * @return {boolean} result.acknowledged     Successful operation = true
  * @return {number}  result.modifiedCount    Number of modified records (always 1)
  * @return {null}    result.upsertedId       Id of upserted record (always null)

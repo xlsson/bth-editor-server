@@ -23,7 +23,6 @@ const functions = require('../db/functions.js');
  *
  * @return {object} result              The result as a JSON object.
  *
- * If the token validates:
  * @return {boolean} result.acknowledged     Successful operation = true
  * @return {number}  result.modifiedCount    Number of modified records (always 1)
  * @return {null}    result.upsertedId       Id of upserted record (always null)

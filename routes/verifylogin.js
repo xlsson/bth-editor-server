@@ -30,8 +30,6 @@ if (process.env.NODE_ENV === 'test') {
  * @param {string} req.body.password    Unhashed password
  * @param {object} res                  Result object
  *
- * @throws Error if email = username is not found in the database
- *
  * @return {object} result              The result as a JSON object.
  * @return {string} result.userexists   ("true" or "false")
  *

@@ -25,17 +25,15 @@ const functions = require('../db/functions.js');
  *
  * @return {object} result              The result as a JSON object.
  *
- * If the token validates (checked in the preceding middleware) but the filename
- * is taken:
- * @return {boolean} result.tokenIsVerified  Set to true
+ * If the filename is taken:
+ * @return {boolean} result.acknowledged     Set to false
  *
- * If the token validates and the filename is not taken:
- * @return {boolean} result.acknowledged     Successful operation = true
+ * If the filename is not taken:
+ * @return {boolean} result.acknowledged     Set to true
  * @return {number}  result.modifiedCount    Number of modified records (always 1)
  * @return {null}    result.upsertedId       Id of upserted record (always null)
  * @return {number}  result.upsertedCount    Number of upserted records (always 0)
  * @return {number}  result.matchedCount     Number of matching records (always 1)
- *
  */
 app.put("/createone", async function(req, res) {
     let result;
