@@ -14,11 +14,12 @@ const mongo = require("mongodb").MongoClient;
 const jwt = require('jsonwebtoken');
 const config = require('../db/testconfig.json');
 
+var testUser1Data = require('./testUser1Data.js');
+
 var client;
 
-var testUserData;
-var testUserId;
-var testUserToken;
+var testUser1Id;
+var testUser1Token;
 
 chai.should();
 
@@ -38,32 +39,12 @@ describe('Test database routes', function() {
         /** Setup database collection by first wiping it and then adding a document */
         await db.dropDatabase();
 
-        testUserData = {
-            name: "Max",
-            docs: [
-                {
-                    filename: "meinbuch",
-                    title: "Das Buch",
-                    content: "Das ist ein buch. Das ist mein Buch",
-                    allowedusers: [ "max@mustermann.de", "lisa@mustermann.de", "johnny@mustermann.de" ]
-                },
-                {
-                    filename: "daszweite",
-                    title: "Buch 2",
-                    content: "Hier ist ein Buch, das ich geschrieben habe.",
-                    allowedusers: [ "pelle@mustermann.de", "johnny@mustermann.de" ]
-                }
-            ],
-            email: "max@mustermann.de",
-            password: "$2a$10$sDMqioEmfkbrHr2TvD/IrOoJ1ZanQfrQ.03hym6SKNdSZ59oicUry"
-        }
+        let testUser1 = await db.collection("users").insertOne(testUser1Data);
 
-        let testUser = await db.collection("users").insertOne(testUserData);
-
-        testUserId = testUser.insertedId.toString();
+        testUser1Id = testUser1.insertedId.toString();
 
         /** Create a JSON web token needed for http requests */
-        testUserToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
+        testUser1Token = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
     });
 
     after( function(done) {
@@ -71,15 +52,115 @@ describe('Test database routes', function() {
         client.close(done);
     });
 
-    describe('Get all docs for one user, using a graphql route', () => {
+    describe('PUT /createone - Create a new document', () => {
+
+        afterEach(function() {
+            /** Körs efter varje test i denna describe = PUT createone */
+        });
+
+        after(function() {
+            console.log("Nollställ/rensa upp någonting efter detta block?");
+        });
+
+        it('Create text document = acknowledged: true, status 201', (done) => {
+            chai.request(server)
+                .put("/createone")
+                .set('x-access-token', testUser1Token)
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'afilename',
+                    code: false,
+                    title: 'atitle',
+                    content: 'somecontent',
+                    comments: [{ nr: 2, text: "Comment nr 2" }],
+                    email: 'max@mustermann.de'
+                })
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.acknowledged.should.equal(true);
+                    done();
+                });
+        });
+        it('Create code document = acknowledged: true, status 201', (done) => {
+            chai.request(server)
+                .put("/createone")
+                .set('x-access-token', testUser1Token)
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'codefilename',
+                    code: true,
+                    title: 'atitle',
+                    content: 'somecontent',
+                    comments: [{ nr: 2, text: "Comment nr 2" }],
+                    email: 'max@mustermann.de'
+                })
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.acknowledged.should.equal(true);
+                    done();
+                });
+        });
+        it('Already existing filename = acknowledged: false, status 201', (done) => {
+            chai.request(server)
+                .put("/createone")
+                .set('x-access-token', testUser1Token)
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'afilename',
+                    code: false,
+                    title: 'atitle',
+                    content: 'somecontent',
+                    comments: [{ nr: 2, text: "Comment nr 2" }],
+                    email: 'max@mustermann.de'
+                })
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.acknowledged.should.equal(false);
+                    done();
+                });
+        });
+        it('Missing properties = acknowledged: false, status 400', (done) => {
+            chai.request(server)
+                .put("/createone")
+                .set('x-access-token', testUser1Token)
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'afilename2'
+                })
+                .end((err, res) => {
+                    res.should.have.status(400);
+                    res.body.acknowledged.should.equal(false);
+                    done();
+                });
+        });
+        it('Missing JSON web token header = status 401', (done) => {
+            chai.request(server)
+                .put("/createone")
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'anotherfilename',
+                    code: false,
+                    title: 'atitle',
+                    content: 'somecontent',
+                    comments: [{ nr: 2, text: "Comment nr 2" }],
+                    email: 'max@mustermann.de'
+                })
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
+    describe('/graphql - Get all docs for one user', () => {
         it('Request returns status 200 and returns expected document', (done) => {
             chai.request(server)
                 .post("/graphql")
                 .set('content-type', 'application/json')
                 .set('Accept', 'application/json')
-                .set('x-access-token', testUserToken)
+                .set('x-access-token', testUser1Token)
                 .send({
-                    query: '{ allowedDocs (email: "johnny@mustermann.de") { filename } }'
+                    query: '{ allowedDocs (email: "johnny@mustermann.de", code: false) { filename } }'
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -90,26 +171,7 @@ describe('Test database routes', function() {
         });
     });
 
-    describe('Create one document: PUT /createone', () => {
-        it('Request returns status 201 is an object, where property acknowledged is true', (done) => {
-            chai.request(server)
-                .put("/createone")
-                .set('x-access-token', testUserToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
-                .send({
-                    filename: 'afilename',
-                    title: 'atitle',
-                    content: 'somecontent',
-                    email: 'lisa@mustermann.de'
-                })
-                .end((err, res) => {
-                    res.should.have.status(201);
-                    res.body.should.be.an("object");
-                    res.body.acknowledged.should.equal(true);
-                    done();
-                });
-        });
-    });
+
 
     describe('Read one document, using a graphql route', () => {
         it('Request returns status 200 and result body contains expected property', (done) => {
@@ -117,9 +179,9 @@ describe('Test database routes', function() {
                 .post("/graphql")
                 .set('content-type', 'application/json')
                 .set('Accept', 'application/json')
-                .set('x-access-token', testUserToken)
+                .set('x-access-token', testUser1Token)
                 .send({
-                    query: `{ doc (filename: "${testUserData.docs[0].filename}") { filename, title, content, allowedusers, ownerName, ownerEmail } }`
+                    query: `{ doc (filename: "${testUser1Data.docs[0].filename}") { filename, title, content, allowedusers, ownerName, ownerEmail } }`
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -134,10 +196,10 @@ describe('Test database routes', function() {
         it('Request returns status 200 and contains expected property values', (done) => {
             chai.request(server)
                 .put("/updateone")
-                .set('x-access-token', testUserToken)
+                .set('x-access-token', testUser1Token)
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send({
-                    filename: testUserData.docs[0].filename,
+                    filename: testUser1Data.docs[0].filename,
                     title: 'newtitle',
                     content: 'newcontent'
                 })

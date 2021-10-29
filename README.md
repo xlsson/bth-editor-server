@@ -71,8 +71,8 @@ Creates a PDF file of the current document and opens it in a new tab for downloa
 Takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
 Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
-edit `filename`. Returns `{ inviteSent: true }` with status 202 if message is successfully sent,
-otherwise `{ inviteSent: false }` with status 500.
+edit `filename`.
+If the token does not verify, it returns `{ tokenNotValid: true }` with status 401. If the token verifies, but the user is not the owner of the document, it returns `{ notAllowed: true }` with status 401. If authentication is successful, it returns `{ inviteSent: true }` with status 202 if message is successfully sent, or `{ inviteSent: false }` with status 500 if it was not sent.
 
 #### `/updateone` (PUT)
 Takes `filename`, `title`, `content` and `comments` as body properties.
@@ -87,7 +87,7 @@ The array is an array of users who should be allowed to edit the document.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }` with status 200.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
-If the token verifies, but the user is not among the users allowed to edit, it returns `{ notAllowed: true }` with status 401.
+If the token verifies, but the user is not the owner of the document, it returns `{ notAllowed: true }` with status 401.
 
 #### `/verifylogin` (POST)
 Takes `email` and `password` as body properties.
