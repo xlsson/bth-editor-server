@@ -39,10 +39,9 @@ Takes `filename`, `code`, `title`, `content`, `comments` and `email` as body pro
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, and the
 `filename` property does not already exists in database, it saves the
-created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-If the token verifies, but a property is missing, or the filename already exists, it returns `{ acknowledged: false }`.
-Return status: 201.
+created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 201.
+If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
+If the token verifies, but a property is missing, or the filename already exists, it returns `{ acknowledged: false }` with status: 400.
 
 #### `/createuser` (POST)
 Takes `name`, `email` and `password` as body properties.
@@ -53,9 +52,8 @@ Return status: 201.
 
 #### `/graphql` (POST)
 Takes a GraphQL query object as its body.
-Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-Return status: 200.
+Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data with status 204.
+If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
 The server is built to respond to the following GraphQL query objects used by the frontend:
 
 `{ allowedDocs (email: <email>, code: <code>) { filename } }`, where `<email>` is the current user's email, and `<code>`  is set to `true` if code mode is currently on, otherwise `false`. Returns the filenames for all documents that the user is allowed to edit, within the current mode.
@@ -73,28 +71,25 @@ Creates a PDF file of the current document and opens it in a new tab for downloa
 Takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
 Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
-edit `filename`. Returns `{ inviteSent: true }` if message is successfully sent,
-otherwise `{ inviteSent: false }`.
+edit `filename`. Returns `{ inviteSent: true }` with status 202 if message is successfully sent,
+otherwise `{ inviteSent: false }` with status 500.
 
 #### `/updateone` (PUT)
 Takes `filename`, `title`, `content` and `comments` as body properties.
 Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }`.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-Return status: 200.
+If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 200.
+If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
 
 #### `/updateusers` (PUT)
 Takes `filename` and `allowedusers` (an array) as body properties.
 The array is an array of users who should be allowed to edit the document.
 Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }`.
-If the token does not verify, it returns `{ tokenNotValid: true }`.
-Return status: 200.
+If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }` with status 200.
+If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
 
 #### `/verifylogin` (POST)
 Takes `email` and `password` as body properties.
 Tries to find user in db. Checks password against password hash stored in db.
-Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` if
-both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }`
-if password is wrong. Returns `{ userexists: false }` if user is not in db.
-Return status: 201.
+Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` with status 201 if
+both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }` with status 401
+if password is wrong. Returns `{ userexists: false }` with status 401 if user is not in db.
