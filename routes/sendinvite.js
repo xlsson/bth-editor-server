@@ -78,20 +78,17 @@ app.post("/sendinvite", async function(req, res) {
 
         result = { inviteSent: true };
 
-        /** Skip actually sending an e-mail if this is just a test */
-        if (process.env.NODE_ENV !== 'test') {
-            /** using Twilio SendGrid's v3 Node.js Library */
-            /** https://github.com/sendgrid/sendgrid-nodejs */
-            sgMail.setApiKey(config.sendgridsecret);
+        /** using Twilio SendGrid's v3 Node.js Library */
+        /** https://github.com/sendgrid/sendgrid-nodejs */
+        sgMail.setApiKey(config.sendgridsecret);
 
-            sgMail
-                .send(msg)
-                .catch((error) => {
-                    console.error(error);
-                    result = { inviteSent: false };
-                    status = 500;
-                });
-        }
+        sgMail
+            .send(msg)
+            .catch((error) => {
+                console.error(error);
+                result = { inviteSent: false };
+                status = 500;
+            });
 
     } else {
         result = { notAllowed: true };
