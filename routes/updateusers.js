@@ -39,7 +39,7 @@ app.put("/updateusers", async function(req, res) {
     /** Check if logged in user is among users allowed to edit document */
     let docBefore = await functions.getOneDoc(filename);
 
-    if (docBefore.allowedusers.includes(currentUser)) {
+    if (docBefore.ownerEmail === currentUser) {
 
         const params = {
             filename: req.body.filename,
@@ -52,8 +52,6 @@ app.put("/updateusers", async function(req, res) {
         result = { notAllowed: true };
         status = 401;
     }
-
-    console.log(status, result);
 
     res.status(status).json(result);
 });
