@@ -90,6 +90,6 @@ If the token verifies, but the user is not the owner of the document, it returns
 #### `/verifylogin` (POST)
 Takes `email` and `password` as body properties.
 Tries to find user in db. Checks password against password hash stored in db.
-Returns `{ userexists: true, verified: true,  name: <name>, email: <email> }` with status 201 if
+Returns `{ userexists: true, verified: true,  name: <name>, email: <email>, token: <token> }` with status 201 if
 both succeed. Returns `{ userexists: true, verified: false,  name: <name>, email: <email> }` with status 401
 if password is wrong. Returns `{ userexists: false }` with status 401 if user is not in db.
