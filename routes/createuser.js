@@ -47,7 +47,13 @@ app.post("/createuser", async function(req, res) {
 
     const result = await functions.createNewUser(user);
 
-    res.status(201).json(result);
+    let status = 201;
+
+    if (!result.acknowledged) {
+        status = 400;
+    }
+
+    res.status(status).json(result);
 });
 
 module.exports = app;

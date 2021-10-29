@@ -41,14 +41,12 @@ If the token verifies, and the
 `filename` property does not already exists in database, it saves the
 created document in the database, and returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 201.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
-If the token verifies, but a property is missing, or the filename already exists, it returns `{ acknowledged: false }` with status: 400.
+If the token verifies, but a property is missing, or the filename already exists, it returns `{ acknowledged: false }` with status 400.
 
 #### `/createuser` (POST)
 Takes `name`, `email` and `password` as body properties.
-If `email` is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }`.
-If `email` already exists, it does not save the user, and instead returns
-`{ acknowledged: false }`.
-Return status: 201.
+If `email` is unique, it adds a new user and returns `{ acknowledged: true, insertedId: <ObjectId> }` with return status 201. If `email` already exists, it does not save the user, and instead returns
+`{ acknowledged: false }` with return status 400.
 
 #### `/graphql` (POST)
 Takes a GraphQL query object as its body.

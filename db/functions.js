@@ -248,15 +248,15 @@ const functions = {
 
         let result;
 
-        // An error is thrown if the email already exists (email is set as unique)
-        try {
+        let checkEmail = await functions.getOneUser(user.email);
+
+        if (checkEmail.length === 0) {
             result = await database.collection.insertOne(user);
-        } catch (error) {
-            console.log(error);
-            result = { acknowledged: "false" };
-        } finally {
-            await database.client.close();
+        } else {
+            result = { acknowledged: false };
         }
+
+        await database.client.close();
 
         return result;
     },
