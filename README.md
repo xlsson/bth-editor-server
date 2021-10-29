@@ -29,7 +29,7 @@ server automatically whenever a file is updated.
 
 ### Integration tests
 Tests are executed by running `npm test`. A local test database is created when the
-tests are run, to avoid corrupting the production database.
+tests are run, to avoid corrupting the production database. The tests are also run with the Github CI: Github Actions.
 
 ### API
 The following routes are available:
