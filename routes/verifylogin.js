@@ -57,18 +57,23 @@ app.post("/verifylogin", async function(req, res) {
                 email: email
             };
 
+            let status;
+
             /** Create a token for this session */
             if (isVerified) {
                 const payload = { email: email };
                 const secret = config.jwtsecret;
                 const token = jwt.sign(payload, secret, { expiresIn: '1h'});
                 result.token = token;
+                status = 201;
+            } else {
+                status = 401;
             }
-            res.status(201).json(result);
+            res.status(status).json(result);
         });
     } catch (e) {
         let result = { userexists: false };
-        res.status(201).json(result);
+        res.status(401).json(result);
     }
 });
 

@@ -66,6 +66,8 @@ app.post("/sendinvite", async function(req, res) {
         inviteSent: true
     };
 
+    let status = 202;
+
     /** using Twilio SendGrid's v3 Node.js Library */
     /** https://github.com/sendgrid/sendgrid-nodejs */
     sgMail.setApiKey(config.sendgridsecret);
@@ -75,9 +77,10 @@ app.post("/sendinvite", async function(req, res) {
         .catch((error) => {
             console.error(error);
             result.inviteSent = false;
+            status = 500;
         });
 
-    res.status(202).json(result);
+    res.status(status).json(result);
 });
 
 module.exports = app;

@@ -37,6 +37,7 @@ const functions = require('../db/functions.js');
  */
 app.put("/createone", async function(req, res) {
     let result;
+    let status = 201;
 
     const doc = {
         filename: req.body.filename,
@@ -56,9 +57,10 @@ app.put("/createone", async function(req, res) {
         result = await functions.createNewDoc(doc);
     } else {
         result = { acknowledged: false };
+        status = 400;
     }
 
-    res.status(201).json(result);
+    res.status(status).json(result);
 });
 
 module.exports = app;

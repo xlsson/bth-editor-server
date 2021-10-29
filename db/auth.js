@@ -43,7 +43,7 @@ const auth = {
 
         jwt.verify(token, secret, function(err, decoded) {
             if (err) {
-                res.status(200).json({ tokenNotValid: true });
+                res.status(401).json({ tokenNotValid: true });
                 return;
             }
             next();
