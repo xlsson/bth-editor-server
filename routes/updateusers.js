@@ -17,7 +17,9 @@ const functions = require('../db/functions.js');
  * @param {object} req                   Request object, consisting of:
  * @param {string} req.body.filename     Filename
  * @param {array}  req.body.allowedusers Array of all users with editing rights
- * @param {object} res                   Result object
+ *
+ * @param {object} res                   Result object:
+ * @param {string} res.locals.userEmail  E-mail of logged in user
  *
  * @return {object}  result                  The result as a JSON object.
  * @return {boolean} result.acknowledged     Successful operation = true
@@ -28,16 +30,32 @@ const functions = require('../db/functions.js');
  * @return {array}   result.allowedusers     Array of all users with editing rights
  */
 app.put("/updateusers", async function(req, res) {
+    const currentUser = res.locals.userEmail;
+    const filename = req.body.filename;
+
     let result;
+    let status = 200;
 
-    const params = {
-        filename: req.body.filename,
-        allowedusers: req.body.allowedusers
-    };
+    /** Check if logged in user is among users allowed to edit document */
+    let docBefore = await functions.getOneDoc(filename);
 
-    result = await functions.updateUsers(params);
+    if (docBefore.allowedusers.includes(currentUser)) {
 
-    res.status(200).json(result);
+        const params = {
+            filename: req.body.filename,
+            allowedusers: req.body.allowedusers
+        };
+
+        result = await functions.updateUsers(params);
+
+    } else {
+        result = { notAllowed: true };
+        status = 401;
+    }
+
+    console.log(status, result);
+
+    res.status(status).json(result);
 });
 
 module.exports = app;

@@ -77,8 +77,9 @@ otherwise `{ inviteSent: false }` with status 500.
 #### `/updateone` (PUT)
 Takes `filename`, `title`, `content` and `comments` as body properties.
 Takes a JWT token as an `x-access-token` header.
-If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 200.
+If the token verifies, and the user is among the users with editing rights, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 200.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
+If the token verifies, but the user is not among the users allowed to edit, it returns `{ notAllowed: true }` with status 401.
 
 #### `/updateusers` (PUT)
 Takes `filename` and `allowedusers` (an array) as body properties.
@@ -86,6 +87,7 @@ The array is an array of users who should be allowed to edit the document.
 Takes a JWT token as an `x-access-token` header.
 If the token verifies, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1, allowedusers: <array> }` with status 200.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
+If the token verifies, but the user is not among the users allowed to edit, it returns `{ notAllowed: true }` with status 401.
 
 #### `/verifylogin` (POST)
 Takes `email` and `password` as body properties.

@@ -15,11 +15,14 @@ const functions = require('../db/functions.js');
  * @async
  *
  * @param {object} req                   Request object, consisting of:
+ * @param {string} req.body.currentUser  E-mail of logged in user
  * @param {string} req.body.filename     Filename
  * @param {string} req.body.title        Title of file
  * @param {string} req.body.content      Contents of file
  * @param {array}  req.body.comments     Array of comment objects
- * @param {object} res                   Result object
+ *
+ * @param {object} res                   Result object:
+ * @param {string} res.locals.userEmail  E-mail of logged in user
  *
  * @return {object} result              The result as a JSON object.
  *
@@ -30,18 +33,32 @@ const functions = require('../db/functions.js');
  * @return {number}  result.matchedCount     Number of matching records (always 1)
  */
 app.put("/updateone", async function(req, res) {
+    const currentUser = res.locals.userEmail;
+    const filename = req.body.filename;
+
     let result;
+    let status = 200;
 
-    const doc = {
-        filename: req.body.filename,
-        title: req.body.title,
-        content: req.body.content,
-        comments: req.body.comments
-    };
+    /** Check if logged in user is among users allowed to edit document */
+    let docBefore = await functions.getOneDoc(filename);
 
-    result = await functions.updateDoc(doc);
+    if (docBefore.allowedusers.includes(currentUser)) {
 
-    res.status(200).json(result);
+        const doc = {
+            filename: filename,
+            title: req.body.title,
+            content: req.body.content,
+            comments: req.body.comments
+        };
+
+        result = await functions.updateDoc(doc);
+
+    } else {
+        result = { notAllowed: true };
+        status = 401;
+    }
+
+    res.status(status).json(result);
 });
 
 module.exports = app;

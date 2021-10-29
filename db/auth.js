@@ -46,6 +46,8 @@ const auth = {
                 res.status(401).json({ tokenNotValid: true });
                 return;
             }
+            /** Forward the deciphered e-mail address to the next function */
+            res.locals.userEmail = decoded.email;
             next();
         });
     }
