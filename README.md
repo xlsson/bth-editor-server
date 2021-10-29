@@ -50,7 +50,7 @@ If `email` is unique, it adds a new user and returns `{ acknowledged: true, inse
 
 #### `/graphql` (POST)
 Takes a GraphQL query object as its body.
-Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data with status 204.
+Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data with status 200.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
 The server is built to respond to the following GraphQL query objects used by the frontend:
 
