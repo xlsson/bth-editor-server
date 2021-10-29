@@ -57,6 +57,9 @@ app.put("/createone", async function(req, res) {
         result = await functions.createNewDoc(doc);
     } else {
         result = { acknowledged: false };
+    }
+
+    if (result.acknowledged === false) {
         status = 400;
     }
 
