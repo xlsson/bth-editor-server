@@ -78,6 +78,7 @@ Takes a JWT token as an `x-access-token` header.
 If the token verifies, and the user is among the users with editing rights, it returns `{ acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }` with status 200.
 If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
 If the token verifies, but the user is not among the users allowed to edit, it returns `{ notAllowed: true }` with status 401.
+If the token verifies, but one or more properties is missing, it returns `{ acknowledged: false }` with status 400.
 
 #### `/updateusers` (PUT)
 Takes `filename` and `allowedusers` (an array) as body properties.
