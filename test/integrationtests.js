@@ -610,7 +610,7 @@ describe('Test server functionality', function() {
 
     });
 
-    describe('Generating PDF', () => {
+    describe('Generating a PDF file', () => {
 
         before( async function() {
             /** Setup database collection by first wiping it and then adding a document */
@@ -624,6 +624,7 @@ describe('Test server functionality', function() {
 
             /** Remove any previous PDF file before running tests */
             const file = path.join(__dirname, '../temppdf/temp.pdf');
+            console.log(file);
             if(fs.existsSync(file)) { fs.unlinkSync(file); };
 
         });
