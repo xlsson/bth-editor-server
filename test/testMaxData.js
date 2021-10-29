@@ -1,4 +1,4 @@
-const testUser1Data = {
+const testMaxData = {
     name: "Max",
     docs: [
         {
@@ -44,4 +44,4 @@ const testUser1Data = {
     password: "$2a$10$sDMqioEmfkbrHr2TvD/IrOoJ1ZanQfrQ.03hym6SKNdSZ59oicUry"
 };
 
-module.exports = testUser1Data;
+module.exports = testMaxData;

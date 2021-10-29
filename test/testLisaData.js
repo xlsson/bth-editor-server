@@ -1,4 +1,4 @@
-const testUser2Data = {
+const testLisaData = {
     name: "Lisa",
     docs: [
         {
@@ -44,4 +44,4 @@ const testUser2Data = {
     password: "$2a$10$nb.nCoRLDyK5a1gZfogx.e7aSvTYQPLWArEdHdvc33dsjnihDVac6"
 };
 
-module.exports = testUser2Data;
+module.exports = testLisaData;
