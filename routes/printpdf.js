@@ -39,7 +39,7 @@ app.post("/printpdf", async function(req, res) {
     .then(pdfBuffer => {
         let pdffolder = path.join(__dirname, '../temppdf/');
         var file = fs.createReadStream(`${pdffolder}temp.pdf`);
-        file.pipe(res);
+        file.pipe(res.status(200));
     });
 
 });

@@ -8,6 +8,7 @@ process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const assert = require('chai').assert;
 const server = require('../app.js');
 const mongo = require("mongodb").MongoClient;
 
@@ -17,10 +18,12 @@ const config = require('../db/testconfig.json');
 var testMaxData = require('./testMaxData.js');
 var testLisaData = require('./testLisaData.js');
 
+const path = require('path');
+const fs = require('fs');
+
 var client;
 var db;
 
-// var testMaxId;
 var testMax;
 var testMaxToken;
 var testLisa;
@@ -41,8 +44,6 @@ describe('Test server functionality', function() {
 
         db = await client.db();
 
-        // testMaxId = testMax.insertedId.toString();
-
     });
 
     after( function(done) {
@@ -50,7 +51,7 @@ describe('Test server functionality', function() {
         client.close(done);
     });
 
-    describe('Creating a new user, logging in, reading a document', () => {
+    describe('Creating a new user, logging in, reading documents', () => {
 
         before( async function() {
             /** Setup database collection by first wiping it and then adding a document */
@@ -63,7 +64,7 @@ describe('Test server functionality', function() {
         });
 
 
-        it('Reading a document returns confirmation status', (done) => {
+        it('Reading a document works', (done) => {
             chai.request(server)
                 .post("/graphql")
                 .set('content-type', 'application/json')
@@ -78,11 +79,12 @@ describe('Test server functionality', function() {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.data.doc.filename.should.equal("meinbuch");
+                    res.body.data.doc.title.should.equal("Das Buch");
                     done();
                 });
         });
 
-        it('Reading a document without a JSON web token returns fail status', (done) => {
+        it('Reading a document without a JSON web token fails', (done) => {
             chai.request(server)
                 .post("/graphql")
                 .set('content-type', 'application/json')
@@ -100,7 +102,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Registering a new, unique user returns confirmation status', (done) => {
+        it('Registering a new, unique user works', (done) => {
             chai.request(server)
                 .post("/createuser")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -116,7 +118,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Searching for new user in db returns expected property', (done) => {
+        it('Searching for the new user is successful', (done) => {
             chai.request(server)
                 .post("/graphql")
                 .set('content-type', 'application/json')
@@ -132,7 +134,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Registering an already existing returns fail status', (done) => {
+        it('Trying to register an already existing user fails', (done) => {
             chai.request(server)
                 .post("/createuser")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -148,7 +150,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Logging in existing user returns confirmation status and token', (done) => {
+        it('Logging in an existing user works', (done) => {
             chai.request(server)
                 .post("/verifylogin")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -165,7 +167,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Logging in with wrong password returns fail status and no token', (done) => {
+        it('Logging in with the wrong password fails', (done) => {
             chai.request(server)
                 .post("/verifylogin")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -182,7 +184,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Logging in with non-existing user returns fail status and no token', (done) => {
+        it('Logging in with a non-existing user fails', (done) => {
             chai.request(server)
                 .post("/verifylogin")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -200,7 +202,7 @@ describe('Test server functionality', function() {
 
     });
 
-    describe('Creating and updating a document', () => {
+    describe('Creating and updating documents', () => {
 
         before( async function() {
             /** Setup database collection by first wiping it and then adding a document */
@@ -212,7 +214,7 @@ describe('Test server functionality', function() {
             testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
         });
 
-        it('Creating a new document returns confirmation status', (done) => {
+        it('Creating a new document works', (done) => {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
@@ -232,7 +234,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Reading the newly created document returns expected property', (done) => {
+        it('Reading the newly created document works', (done) => {
             chai.request(server)
                 .post("/graphql")
                 .set('content-type', 'application/json')
@@ -251,7 +253,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Creating a document with an existing filename returns fail status', (done) => {
+        it('Creating a document with an existing filename fails', (done) => {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
@@ -271,7 +273,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Creating a document without a JSON web token returns fail status', (done) => {
+        it('Creating a document without a JSON web token fails', (done) => {
             chai.request(server)
                 .put("/createone")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -290,7 +292,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Creating a document with missing properties returns fail status', (done) => {
+        it('Creating a document with missing properties fails', (done) => {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
@@ -305,7 +307,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Updating a document returns confirmation status', (done) => {
+        it('Updating a document works', (done) => {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testMaxToken)
@@ -345,7 +347,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Updating a document with missing properties returns fail status', (done) => {
+        it('Updating a document with missing properties fails', (done) => {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testMaxToken)
@@ -360,7 +362,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Updating a document without a JSON web token returns fail status', (done) => {
+        it('Updating a document without a JSON web token fails', (done) => {
             chai.request(server)
                 .put("/updateone")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -379,7 +381,7 @@ describe('Test server functionality', function() {
 
     });
 
-    describe('Editing rights: sharing, accessing', () => {
+    describe('Editing rights: sharing, accessing text and code documents', () => {
 
         before( async function() {
             /** Setup database collection by first wiping it and then adding a document */
@@ -461,7 +463,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Updating the array of users allowed to edit returns confirmation sattus', (done) => {
+        it('Updating the array of users allowed to edit works', (done) => {
             chai.request(server)
                 .put("/updateusers")
                 .set('x-access-token', testMaxToken)
@@ -515,7 +517,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Trying to send invite returns confirmation status', (done) => {
+        it('Trying to send invite works', (done) => {
             chai.request(server)
                 .post("/sendinvite")
                 .set('x-access-token', testMaxToken)
@@ -533,7 +535,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Trying to send invite without JSON web token returns fail status', (done) => {
+        it('Trying to send an invite without a JSON web token fails', (done) => {
             chai.request(server)
                 .post("/sendinvite")
                 .set('content-type', 'application/x-www-form-urlencoded')
@@ -550,7 +552,7 @@ describe('Test server functionality', function() {
                 });
         });
 
-        it('Trying to send invite without being document owner returns fail status', (done) => {
+        it('Trying to send an invite without being document owner fails', (done) => {
             chai.request(server)
                 .post("/sendinvite")
                 .set('x-access-token', testLisaToken)
@@ -566,6 +568,85 @@ describe('Test server functionality', function() {
                     res.body.notAllowed.should.equal(true);
                     done();
                 });
+        });
+
+        it('Adding a not yet registered user to allowed users array works', (done) => {
+            chai.request(server)
+                .put("/updateusers")
+                .set('x-access-token', testMaxToken)
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    filename: 'kod2',
+                    allowedusers: [
+                        "max@mustermann.de",
+                        "pelle@mustermann.de",
+                        "johnny@mustermann.de",
+                        "iamnotregistered@mustermann.de"
+                    ]
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.acknowledged.should.equal(true);
+                    done();
+                });
+        });
+
+        it('After update: array of allowed users contains the new e-mail', (done) => {
+            chai.request(server)
+                .post("/graphql")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
+                .set('x-access-token', testMaxToken)
+                .send({
+                    query: `{ doc (filename: "kod2" ) {
+                        filename, title, content, allowedusers, ownerName,
+                        ownerEmail, comments { nr, text } } }`
+                })
+                .end((err, res) => {
+                    res.body.data.doc.allowedusers.should.deep.include('iamnotregistered@mustermann.de');
+                    done();
+                });
+        });
+
+    });
+
+    describe('Generating PDF', () => {
+
+        before( async function() {
+            /** Setup database collection by first wiping it and then adding a document */
+            await db.dropDatabase();
+
+            testMax = await db.collection("users").insertOne(testMaxData);
+
+            /** Create a JSON web token needed for http requests */
+            testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
+
+
+            /** Remove any previous PDF file before running tests */
+            const file = path.join(__dirname, '../temppdf/temp.pdf');
+            if(fs.existsSync(file)) { fs.unlinkSync(file); };
+
+        });
+
+        it('Generating PDF returns expected HTTP status', (done) => {
+            chai.request(server)
+                .post("/printpdf")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
+                .set('x-access-token', testMaxToken)
+                .send({
+                    html: "<p>lorem ipsum</p>"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    done();
+                });
+        });
+
+        it('Check that a PDF file was generated', (done) => {
+            const file = path.join(__dirname, '../temppdf/temp.pdf');
+            assert.isOk(fs.existsSync(file));
+            done();
         });
 
     });

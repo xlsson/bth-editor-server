@@ -63,7 +63,7 @@ The server is built to respond to the following GraphQL query objects used by th
 #### `/printpdf` (POST)
 Takes `html` as its only query parameter. `html` is the currentContent
 with some extra HTML elements wrapped around it for style.
-Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.
+Creates a PDF file of the current document and saves it to the path `../temppdf/temp.pdf`. It creates a readable stream, which is pushed to the response object through the .pipe() method. Return status 200.
 
 #### `/sendinvite` (POST)
 Takes `recipient` (e-mail), `inviterName`, `filename` and `title` as body properties.
