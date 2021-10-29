@@ -66,7 +66,7 @@ with some extra HTML elements wrapped around it for style.
 Creates a PDF file of the current document and opens it in a new tab for downloading or printing. Returns a blob of binary data, representing the pdf file.
 
 #### `/sendinvite` (POST)
-Takes `recipient` (e-mail), `inviterName`, `inviterEmail`, `filename` and `title` as body properties.
+Takes `recipient` (e-mail), `inviterName`, `filename` and `title` as body properties.
 Takes a JWT token as an `x-access-token` header.
 Sends an e-mail using SendGrid to `recipient`, with an invitation to register and
 edit `filename`.
