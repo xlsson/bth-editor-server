@@ -69,6 +69,7 @@ app.post("/verifylogin", async function(req, res) {
             } else {
                 status = 401;
             }
+
             res.status(status).json(result);
         });
     } catch (e) {
