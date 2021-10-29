@@ -51,7 +51,22 @@ app.put("/updateone", async function(req, res) {
             comments: req.body.comments
         };
 
-        result = await functions.updateDoc(doc);
+        let undefinedProperty = false;
+        Object.keys(doc).forEach((key) => {
+            if (doc[key] === undefined) { undefinedProperty = true; }
+        });
+
+        if (!undefinedProperty) {
+            result = await functions.updateDoc(doc);
+        } else {
+            result = { acknowledged: false };
+        }
+
+        if (result.acknowledged === false) {
+            status = 400;
+        }
+
+
 
     } else {
         result = { notAllowed: true };
