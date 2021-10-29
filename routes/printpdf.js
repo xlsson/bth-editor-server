@@ -21,8 +21,8 @@ const fs = require('fs');
  * @param {string} req.body.html         HTML representation of the file title
  *                                       and its content.
  *
- * @return {ReadStream}                  ReadStream carrying the generated PDF
- *                                       file blob.
+ * @return {res}                         WriteStream carrying the generated PDF
+ *                                       ReadStream.
  */
 app.post("/printpdf", async function(req, res) {
 
