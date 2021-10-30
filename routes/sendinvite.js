@@ -71,7 +71,7 @@ app.post("/sendinvite", async function(req, res) {
 
         const msg = {
             to: recipient,
-            from: 'riax20@student.bth.se',
+            from: config.sendgridsender,
             subject: `CirrusDocs – invitation to edit from ${inviterName}`,
             html: emailContentHtml
         };

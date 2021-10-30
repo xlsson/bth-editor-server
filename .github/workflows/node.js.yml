@@ -43,6 +43,7 @@ jobs:
         touch ./db/testconfig.json
         echo '{' >> ./db/testconfig.json
         echo '    "jwtsecret": "${{ secrets.JWTSECRET }}",' >> ./db/testconfig.json
+        echo '    "sendgridsender": "${{ secrets.TESTRECIPIENT }}",' >> ./db/testconfig.json
         echo '    "sendgridsecret": "${{ secrets.SENDGRID }}",' >> ./db/testconfig.json
         echo '    "testrecipient": "${{ secrets.TESTRECIPIENT }}"' >> ./db/testconfig.json
         echo '}' >> ./db/testconfig.json
