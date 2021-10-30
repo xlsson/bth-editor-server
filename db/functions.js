@@ -100,12 +100,10 @@ const functions = {
             };
 
         } catch (err) {
-            console.log(err);
-            result = err;
+            result = { filename: null };
         } finally {
             await database.client.close();
         }
-
         return result;
     },
 
