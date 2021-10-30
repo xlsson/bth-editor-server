@@ -48,4 +48,4 @@ jobs:
         echo '}' >> ./db/testconfig.json
 
     - name: Run tests
-      run: npm test
+      run: npm test "PDF"
