@@ -14,7 +14,7 @@ const bodyParser = require("body-parser");
 const auth = require('./db/auth');
 
 /** GraphQL middleware to enable GraphQL routes using its query language */
-const visual = true;
+const visual = false;
 const { graphqlHTTP } = require('express-graphql');
 const { GraphQLSchema } = require("graphql");
 const RootQueryType = require("./graphql/root.js");
