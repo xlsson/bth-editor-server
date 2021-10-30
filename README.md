@@ -1,5 +1,7 @@
 ![https://github.com/xlsson/bth-editor-server/actions](https://github.com/xlsson/bth-editor-server/actions/workflows/node.js.yml/badge.svg)
 
+![CirrusDocs](https://github.com/xlsson/bth-reactjs-editor/blob/main/src/img/logo.png?raw=true)
+
 # bth-editor-server
 Server for CirrusDocs ([xlsson/bth-reactjs-editor](https://github.com/xlsson/bth-reactjs-editor)), a real-time collaborative editor. A student project for the course JavaScript-based web frameworks at Blekinge Institute of Technology (BTH). The server works as an API for a MongoDB database, stored in the MongoDB Atlas cloud.
 
