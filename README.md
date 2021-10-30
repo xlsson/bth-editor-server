@@ -50,15 +50,16 @@ If `email` is unique, it adds a new user and returns `{ acknowledged: true, inse
 
 #### `/graphql` (POST)
 Takes a GraphQL query object as its body.
-Takes a JWT token as an `x-access-token` header. If the token verifies, it returns an object with the requested data with status 200.
-If the token does not verify, it returns `{ tokenNotValid: true }` with status 401.
-The server is built to respond to the following GraphQL query objects used by the frontend:
+Takes a JWT token as an `x-access-token` header. The server is built to respond to the following GraphQL query objects used by the frontend:
 
 `{ allowedDocs (email: <email>, code: <code>) { filename } }`, where `<email>` is the current user's email, and `<code>`  is set to `true` if code mode is currently on, otherwise `false`. Returns the filenames for all documents that the user is allowed to edit, within the current mode.
 
+`{ users { email } }` returns the e-mail addresses of all users in the database.
+
 `{ doc (filename: <filename> ) { filename, title, content, allowedusers, ownerName, ownerEmail, comments { nr, text } } }` returns the document with the corresponding filename.
 
-`{ users { email } }` returns the e-mail addresses of all users in the database.
+For the `{ doc...`-query, if no file is found,  it returns `{ errors: <array> }`, describing that the filename property cannot be set to null. In all other cases, it returns an object with the requested data. If the token does not verify, it returns `{ tokenNotValid: true }` with status 401. In all other cases, it returns status 200.
+
 
 #### `/printpdf` (POST)
 Takes `html` as its only query parameter. `html` is the currentContent
