@@ -1,4 +1,4 @@
-![Github Actions](https://github.com/xlsson/bth-editor-server/actions/workflows/node.js.yml/badge.svg)
+![https://github.com/xlsson/bth-editor-server/actions](https://github.com/xlsson/bth-editor-server/actions/workflows/node.js.yml/badge.svg)
 
 # bth-editor-server
 Server for CirrusDocs ([xlsson/bth-reactjs-editor](https://github.com/xlsson/bth-reactjs-editor)), a real-time collaborative editor. A student project for the course JavaScript-based web frameworks at Blekinge Institute of Technology (BTH). The server works as an API for a MongoDB database, stored in the MongoDB Atlas cloud.
@@ -9,6 +9,17 @@ The project uses the `Express` framework for routing. The packages `morgan` (HTT
 Tests use `mocha` (test framework) and `nyc` (code coverage). The test script also uses `cross-env` (for cross-OS compatibility). In the tests, `chai` (assertion library), `chaiHttp` (http integration tests library) and `mongodb` (MongoDB driver) are used.
 
 The project's other dependencies are `Socket.IO` (web socket communication), `bcrypt.js` (encryption), `sendgrid` (SendGrid mail service) and `html-pdf-node` (HTML to PDF).
+
+### Installation instructions
+1. Create a MongoDB database. To populate the database along the correct pattern, you can follow the data pattern described by `test/testMaxData.js`, or copy and use the functions in `integrationtests.js` to create and populate your own local database.
+
+2. Run `git clone https://github.com/xlsson/bth-editor-server` to clone this repository.
+
+3. Run `npm install` to install the dependencies listed in `package.json`.
+
+4. Create a `./temppf` folder, for temporary PDF file storage.
+
+5. Create the JSON-files `.db/config.json` and `.db/testconfig.json`. `.db/config.json` should include the properties `username`, `password`, and `dbname` for your database, a random `jwtsecret` string used to create JSON web tokens, and two properties for SendGrid (for the e-mail sharing service): `sendgridsender` (e-mail address) and `sendgridsecret`. To get the last two properties, create a SendGrid account.
 
 ### Installing new modules
 To install a new module in the project, use `npm install <module-name>` in the
@@ -28,8 +39,9 @@ variable set to `dev`, using the test database.
 server automatically whenever a file is updated.
 
 ### Integration tests
-Tests are executed by running `npm test`. A local test database is created when the
-tests are run, to avoid corrupting the production database. The tests are also run with the Github CI: Github Actions.
+Tests are done using Mocha with the chai and chai-http libraries. A local test database is created when the tests are run, to avoid corrupting the production database. The tests are hooked up to the Github CI: Github Actions, which run the tests whenever the repo is pushed. The test script `npm test` uses the `--invert` and `--grep` flags, and takes one parameter. The tests will exclude any test including the parameter value in its description. For example, `npm test "PDF"` will exclude any tests with PDF in its description. That command is run when tests are performed using the Github Actions CI. Ro run all test, use `npm test ""`.
+
+Github Actions CI status and workflow file: https://github.com/xlsson/bth-editor-server/actions
 
 ### API
 The following routes are available:
