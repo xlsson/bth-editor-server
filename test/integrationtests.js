@@ -35,8 +35,8 @@ chai.use(chaiHttp);
 
 describe('Test server functionality', function() {
 
+    /** Setup: run once before all tests. Create the database connection */
     before( async function() {
-        /** Run once before the first test in this block: drops the database */
         client = await mongo.connect("mongodb://localhost/test", {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -46,23 +46,25 @@ describe('Test server functionality', function() {
 
     });
 
+    /** Teardown: run once after all tests. Close the database connection */
     after( function(done) {
-        /** Run once after the last test block: closes database connection */
         client.close(done);
     });
 
-    describe('Creating a new user, logging in, reading documents', () => {
+    describe('1. Creating a new user, logging in, reading documents', () => {
 
+        /** Setup:
+         * Drop the database
+         * Populate it with two users
+         * Create JSON web tokens needed for http requests
+         */
         before( async function() {
-            /** Setup database collection by first wiping it and then adding a document */
             await db.dropDatabase();
-
             testMax = await db.collection("users").insertOne(testMaxData);
-
-            /** Create a JSON web token needed for http requests */
+            testLisa = await db.collection("users").insertOne(testLisaData);
             testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
+            testLisaToken = jwt.sign({ email: "lisa@mustermann.de" }, config.jwtsecret, { expiresIn: '9'});
         });
-
 
         it('Reading a document works', (done) => {
             chai.request(server)
@@ -73,7 +75,7 @@ describe('Test server functionality', function() {
                 .send({
                     query: `
                     { doc (filename: "meinbuch" ) {
-                        filename, title, content, allowedusers, ownerName,
+                        filename, code, title, content, allowedusers, ownerName,
                         ownerEmail, comments { nr, text } } }`
                 })
                 .end((err, res) => {
@@ -92,7 +94,7 @@ describe('Test server functionality', function() {
                 .send({
                     query: `
                     { doc (filename: "meinbuch" ) {
-                        filename, title, content, allowedusers, ownerName,
+                        filename, code, title, content, allowedusers, ownerName,
                         ownerEmail, comments { nr, text } } }`
                 })
                 .end((err, res) => {
@@ -102,10 +104,33 @@ describe('Test server functionality', function() {
                 });
         });
 
+        it('Reading a document with an expired JSON web token fails', (done) => {
+            chai.request(server)
+                .post("/graphql")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
+                .set('x-access-token', testLisaToken)
+                .send({
+                    query: `
+                    { doc (filename: "lisasbok" ) {
+                        filename, code, title, content, allowedusers, ownerName,
+                        ownerEmail, comments { nr, text } } }`
+                })
+                .end(async (err, res) => {
+                    function waitForTokenToExpire() {
+                        return new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                    await waitForTokenToExpire();
+                    res.should.have.status(401);
+                    res.body.tokenNotValid.should.equal(true);
+                    done();
+                });
+        });
+
         it('Registering a new, unique user works', (done) => {
             chai.request(server)
                 .post("/createuser")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     name: 'myname',
                     email: 'unique@emailadress.com',
@@ -137,7 +162,7 @@ describe('Test server functionality', function() {
         it('Trying to register an already existing user fails', (done) => {
             chai.request(server)
                 .post("/createuser")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     name: 'myname',
                     email: 'max@mustermann.de',
@@ -153,7 +178,7 @@ describe('Test server functionality', function() {
         it('Logging in an existing user works', (done) => {
             chai.request(server)
                 .post("/verifylogin")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     email: 'unique@emailadress.com',
                     password: 'password'
@@ -170,7 +195,7 @@ describe('Test server functionality', function() {
         it('Logging in with the wrong password fails', (done) => {
             chai.request(server)
                 .post("/verifylogin")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     email: 'unique@emailadress.com',
                     password: 'wrongpassword'
@@ -187,7 +212,7 @@ describe('Test server functionality', function() {
         it('Logging in with a non-existing user fails', (done) => {
             chai.request(server)
                 .post("/verifylogin")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     email: 'non-existing@emailadress.com',
                     password: 'password'
@@ -202,15 +227,16 @@ describe('Test server functionality', function() {
 
     });
 
-    describe('Creating and updating documents', () => {
+    describe('2. Creating and updating documents', () => {
 
+        /** Setup:
+         * Drop the database
+         * Populate it with one user
+         * Create a JSON web token needed for http requests
+         */
         before( async function() {
-            /** Setup database collection by first wiping it and then adding a document */
             await db.dropDatabase();
-
             testMax = await db.collection("users").insertOne(testMaxData);
-
-            /** Create a JSON web token needed for http requests */
             testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
         });
 
@@ -218,7 +244,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'newdocument',
                     code: false,
@@ -240,15 +266,20 @@ describe('Test server functionality', function() {
                 .set('content-type', 'application/json')
                 .set('Accept', 'application/json')
                 .set('x-access-token', testMaxToken)
-                .send({
+                .send(JSON.stringify({
                     query: `
                     { doc (filename: "newdocument" ) {
-                        filename, title, content, allowedusers, ownerName,
+                        filename, code, title, content, allowedusers, ownerName,
                         ownerEmail, comments { nr, text } } }`
-                })
+                }))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.data.doc.filename.should.equal("newdocument");
+                    res.body.data.doc.code.should.equal(false);
+                    res.body.data.doc.title.should.equal("title");
+                    res.body.data.doc.content.should.equal("somecontent");
+                    res.body.data.doc.comments.should.deep.equal([{ nr: 2, text: "Comment nr 2" }]);
+                    res.body.data.doc.allowedusers.should.deep.equal([ "max@mustermann.de" ]);
                     done();
                 });
         });
@@ -257,13 +288,13 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'newdocument',
                     code: false,
                     title: 'atitle',
                     content: 'somecontent',
-                    comments: [{ nr: 2, text: "Comment nr 2" }],
+                    comments: [],
                     email: 'max@mustermann.de'
                 })
                 .end((err, res) => {
@@ -276,7 +307,7 @@ describe('Test server functionality', function() {
         it('Creating a document without a JSON web token fails', (done) => {
             chai.request(server)
                 .put("/createone")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'thiswillnotbesaved',
                     code: false,
@@ -296,7 +327,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/createone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'thiswillnotbesaved'
                 })
@@ -307,11 +338,30 @@ describe('Test server functionality', function() {
                 });
         });
 
+        it('Reading the not saved document fails', (done) => {
+            chai.request(server)
+                .post("/graphql")
+                .set('x-access-token', testMaxToken)
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
+                .send({
+                    query: `
+                    { doc (filename: "thiswillnotbesaved" ) {
+                        filename, code, title, content, allowedusers, ownerName,
+                        ownerEmail, comments { nr, text } } }`
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.have.own.property("errors");
+                    done();
+                });
+        });
+
         it('Updating a document works', (done) => {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'newdocument',
                     title: 'updatedtitle',
@@ -334,7 +384,7 @@ describe('Test server functionality', function() {
                 .send({
                     query: `
                     { doc (filename: "newdocument" ) {
-                        filename, title, content, allowedusers, ownerName,
+                        filename, code, title, content, allowedusers, ownerName,
                         ownerEmail, comments { nr, text } } }`
                 })
                 .end((err, res) => {
@@ -351,9 +401,9 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
-                    filename: 'newdocument'
+                    filename: 'meinbuch'
                 })
                 .end((err, res) => {
                     res.should.have.status(400);
@@ -365,9 +415,9 @@ describe('Test server functionality', function() {
         it('Updating a document without a JSON web token fails', (done) => {
             chai.request(server)
                 .put("/updateone")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
-                    filename: 'newdocument',
+                    filename: 'meinbuch',
                     title: 'updatedtitle',
                     content: 'updatedcontent',
                     comments: [{ nr: 75, text: "New comment" }]
@@ -379,18 +429,45 @@ describe('Test server functionality', function() {
                 });
         });
 
+        it('Document remains unchanged after failing updates', (done) => {
+            chai.request(server)
+                .post("/graphql")
+                .set('content-type', 'application/json')
+                .set('Accept', 'application/json')
+                .set('x-access-token', testMaxToken)
+                .send({
+                    query: `
+                    { doc (filename: "meinbuch" ) {
+                        filename, code, title, content, allowedusers, ownerName,
+                        ownerEmail, comments { nr, text } } }`
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.data.doc.filename.should.equal("meinbuch");
+                    res.body.data.doc.code.should.equal(false);
+                    res.body.data.doc.title.should.equal("Das Buch");
+                    res.body.data.doc.content.should.equal("Das ist ein buch. Das ist mein Buch");
+                    res.body.data.doc.comments.should.deep.equal([
+                        { nr: 1, text: "Kommentar 1" },
+                        { nr: 2, text: "Kommentar 2" }
+                    ]);
+                    res.body.data.doc.allowedusers.should.deep.equal([ "max@mustermann.de", "lisa@mustermann.de", "johnny@mustermann.de" ]);
+                    done();
+                });
+        });
     });
 
-    describe('Editing rights: sharing, accessing text and code documents', () => {
+    describe('3. Editing rights: sharing, inviting, accessing documents', () => {
 
+        /** Setup:
+         * Drop the database
+         * Populate it with two users
+         * Create JSON web tokens needed for http requests
+         */
         before( async function() {
-            /** Setup database collection by first wiping it and then adding a document */
             await db.dropDatabase();
-
             testMax = await db.collection("users").insertOne(testMaxData);
             testLisa = await db.collection("users").insertOne(testLisaData);
-
-            /** Create a JSON web token needed for http requests */
             testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
             testLisaToken = jwt.sign({ email: "lisa@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
         });
@@ -415,7 +492,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'lisa2',
                     title: 'updatedtitle',
@@ -449,12 +526,12 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testLisaToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'kod2',
                     title: 'updatedtitle',
                     content: 'updatedcontent',
-                    comments: [{ nr: 3, text: "My new comment" }]
+                    comments: []
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -467,7 +544,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateusers")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'kod2',
                     allowedusers: [
@@ -503,12 +580,12 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateone")
                 .set('x-access-token', testLisaToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'kod2',
                     title: 'updatedtitle',
                     content: 'updatedcontent',
-                    comments: [{ nr: 3, text: "My new comment" }]
+                    comments: []
                 })
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -521,7 +598,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .post("/sendinvite")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     recipient: config.testrecipient,
                     inviterName: 'Max',
@@ -538,9 +615,9 @@ describe('Test server functionality', function() {
         it('Trying to send an invite without a JSON web token fails', (done) => {
             chai.request(server)
                 .post("/sendinvite")
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
-                    recipient: 'notactuallysent@whentesting.com',
+                    recipient: config.testrecipient,
                     inviterName: 'Max',
                     filename: 'meinbuch',
                     title: 'Das Buch'
@@ -556,9 +633,9 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .post("/sendinvite")
                 .set('x-access-token', testLisaToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
-                    recipient: 'notactuallysent@whentesting.com',
+                    recipient: config.testrecipient,
                     inviterName: 'Max',
                     filename: 'meinbuch',
                     title: 'Das Buch'
@@ -574,7 +651,7 @@ describe('Test server functionality', function() {
             chai.request(server)
                 .put("/updateusers")
                 .set('x-access-token', testMaxToken)
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
                     filename: 'kod2',
                     allowedusers: [
@@ -599,7 +676,7 @@ describe('Test server functionality', function() {
                 .set('x-access-token', testMaxToken)
                 .send({
                     query: `{ doc (filename: "kod2" ) {
-                        filename, title, content, allowedusers, ownerName,
+                        filename, code, title, content, allowedusers, ownerName,
                         ownerEmail, comments { nr, text } } }`
                 })
                 .end((err, res) => {
@@ -610,21 +687,20 @@ describe('Test server functionality', function() {
 
     });
 
-    describe('Generating a PDF file', () => {
+    describe('4. Generating a PDF file', () => {
 
+        /** Setup:
+         * Drop the database
+         * Populate it with one user
+         * Create a JSON web token needed for http requests
+         * Check for already existing PDF file - remove it if it exists
+         */
         before( async function() {
-            /** Setup database collection by first wiping it and then adding a document */
             await db.dropDatabase();
-
             testMax = await db.collection("users").insertOne(testMaxData);
-
-            /** Create a JSON web token needed for http requests */
             testMaxToken = jwt.sign({ email: "max@mustermann.de" }, config.jwtsecret, { expiresIn: '1h'});
 
-
-            /** Remove any previous PDF file before running tests */
             const file = path.join(__dirname, '../temppdf/temp.pdf');
-            console.log(file);
             if(fs.existsSync(file)) { fs.unlinkSync(file); };
 
         });
@@ -635,9 +711,7 @@ describe('Test server functionality', function() {
                 .set('content-type', 'application/json')
                 .set('Accept', 'application/json')
                 .set('x-access-token', testMaxToken)
-                .send({
-                    html: "<p>lorem ipsum</p>"
-                })
+                .send({ html: "<p>lorem ipsum</p>" })
                 .end((err, res) => {
                     res.should.have.status(200);
                     done();
