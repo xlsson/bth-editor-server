@@ -13,7 +13,7 @@ Tests use `mocha` (test framework) and `nyc` (code coverage). The test script al
 The project's other dependencies are `Socket.IO` (web socket communication), `bcrypt.js` (encryption), `sendgrid` (SendGrid mail service) and `html-pdf-node` (HTML to PDF).
 
 ### Installation instructions
-1. Create a MongoDB database. To populate the database along the correct pattern, you can follow the data pattern described by `test/testMaxData.js`, or copy and use the functions in `integrationtests.js` to create and populate your own local database.
+1. Create a MongoDB database with two collections, one for production and one for development. To populate the collections along the correct pattern, you can follow the data pattern described by `test/testMaxData.js`, or copy and use the functions in `integrationtests.js` to create and populate your own local database.
 
 2. Run `git clone https://github.com/xlsson/bth-editor-server` to clone this repository.
 
@@ -31,11 +31,8 @@ project root.
 `npm run start` starts the server without setting the NODE_ENV variable, using
 the production database.
 
-`npm run production` starts the server in production mode, with the NODE_ENV
-variable set to `production`, using the production database.
-
 `npm run dev` starts the server in dev = development mode,  with the NODE_ENV
-variable set to `dev`, using the test database.
+variable set to `dev`, using the development database specified in `.db/config.json`.
 
 `npm run watch` does the same thing as `npm run dev`, but also restarts the
 server automatically whenever a file is updated.
@@ -43,7 +40,11 @@ server automatically whenever a file is updated.
 ### Integration tests
 Tests are done using Mocha with the chai and chai-http libraries. A local test database is created when the tests are run, to avoid corrupting the production database. The tests are hooked up to the Github CI: Github Actions, which run the tests whenever the repo is pushed. The test script `npm test` uses the `--invert` and `--grep` flags, and takes one parameter. The tests will exclude any test including the parameter value in its description. For example, `npm test "PDF"` will exclude any tests with PDF in its description. That command is run when tests are performed using the Github Actions CI. Ro run all test, use `npm test ""`.
 
-Github Actions CI status and workflow file: https://github.com/xlsson/bth-editor-server/actions
+Github Actions CI status and workflow file available here: https://github.com/xlsson/bth-editor-server/actions
+
+`npm run clean` wipes the `./node_modules` folder and deletes `./package-lock.json`
+
+`npm run clean-tests` runs `npm run clean`, `npm install` and `npm test`
 
 ### API
 The following routes are available:
