@@ -5,7 +5,6 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "production": "cross-env NODE_ENV='production' node app.js",
     "dev": "cross-env NODE_ENV='dev' node app.js",
     "watch": "cross-env NODE_ENV='dev' nodemon app.js",
     "test": "cross-env NODE_ENV='test' && nyc --reporter=html --reporter=text mocha --exit --timeout 10000 --invert true --grep",
