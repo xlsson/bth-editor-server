@@ -33,12 +33,18 @@ const app = express();
 
 const port = process.env.PORT || 1234;
 
-if ((process.env.NODE_ENV !== 'test') && (process.env.NODE_ENV !== 'dev')) {
-    /** Unless test or dev environment, use morgan to log at command line */
-    app.use(morgan('combined'));
-} else {
-    /** If test or dev, console log environment variable */
+let config;
+
+if (process.env.NODE_ENV === 'test') {
     console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
+    config = require("./db/testconfig.json");
+} else if (process.env.NODE_ENV === 'dev') {
+    console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
+    config = require("./db/config.json");
+} else {
+    /** Use morgan to log at command line */
+    app.use(morgan('combined'));
+    config = require("./db/config.json");
 }
 
 app.use(cors());
@@ -65,7 +71,7 @@ app.put("/updateusers", auth.checkToken, routeUpdateUsers);
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
     cors: {
-        origin: `https://www.student.bth.se`,
+        origin: config.websocketorigin,
         methods: ["GET", "POST"]
     }
 });

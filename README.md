@@ -21,7 +21,7 @@ The project's other dependencies are `Socket.IO` (web socket communication), `bc
 
 4. Create a `./temppf` folder, for temporary PDF file storage.
 
-5. Create the JSON-files `.db/config.json` and `.db/testconfig.json`. `.db/config.json` should include the properties `username`, `password`, and `dbname` for your database, a random `jwtsecret` string used to create JSON web tokens, and two properties for SendGrid (for the e-mail sharing service): `sendgridsender` (e-mail address) and `sendgridsecret`. To get the last two properties, create a SendGrid account.
+5. Create the JSON-files `.db/config.json` and `.db/testconfig.json`. `.db/config.json` should include the properties `username`, `password`, and `dbname` for your database, a random `jwtsecret` string used to create JSON web tokens, two properties for SendGrid (for the e-mail sharing service): `sendgridsender` (e-mail address) and `sendgridsecret` (create a SendGrid account), and `websocketorigin`, which is the domain where your frontend app will be hosted.
 
 ### Installing new modules
 To install a new module in the project, use `npm install <module-name>` in the
